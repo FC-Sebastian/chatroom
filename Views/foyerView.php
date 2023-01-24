@@ -4,7 +4,7 @@
  */
 ?>
 <div class="row justify-content-center g-1">
-    <div class="card col-md-5">
+    <div class="card col-md-6">
         <div class="card-body text-center">
             <form id="form" method="post">
                 <h3 class="card-title text-secondary">Chad Chats</h3>
