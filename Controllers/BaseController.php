@@ -6,7 +6,6 @@ class BaseController
     protected $startsSession = false;
     protected $view = false;
     protected $error = false;
-    protected $onloadFuntction = "";
 
 
     public function setErrorMessage($error)

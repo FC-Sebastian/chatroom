@@ -45,7 +45,7 @@ class BaseModel
         return $returnarray;
     }
 
-    public function load($id)
+    public function loaById($id)
     {
         $query = "SELECT * FROM " . $this->getTableName() . " WHERE id=$id;";
         $result = DbConnection::executeMySQLQuery($query);
