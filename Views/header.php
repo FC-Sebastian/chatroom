@@ -9,10 +9,9 @@
             <?php if (isset($title)) {echo $title;}?>
         </title>
         <link rel="stylesheet" href="<?php echo $url;?>">
-        <link rel="stylesheet" href="<?php echo $controller->getUrl("css/myCss.css");?>">
         <script src="<?= $controller->getUrl("js/jquery-3.6.3.js") ?>"></script>
     </head>
-    <body class="bg-primary bg-opacity-10" onload="<?php echo $controller->getOnload()?>">
+    <body class="bg-primary bg-opacity-10">
 
     <?php if ($controller->getError() !== false):?>
         <div class="bg-danger bg-opacity-25 border border-5 border-danger border-end-0 border-start-0">
