@@ -7,3 +7,4 @@ RewriteBase /chatroom/
 #RewriteRule ^([a-zA-Z]+)/([a-zA-Z]+) index.php?controller=$1&action=$2 [NC,L]
 RewriteRule ^create/([a-zA-Z]+) index.php?controller=create&action=$1 [NC,L]
 RewriteRule ^create index.php?controller=create [NC,L]
+RewriteRule ^chat/([a-zA-Z]+) index.php?controller=chat&chat=$1 [NC,L]

@@ -12,18 +12,21 @@
                     <div class="col-md-9">
                         <div class="input-group">
                             <span class="input-group-text">Username:</span>
-                            <input id="username" class="form-control" type="text"  name="user" required="required" autocomplete="off">
+                            <input id="username" class="form-control" type="text"  name="user" value="<?= $_SESSION["user"] ?? ""?>" required="required" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center mb-3">
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-text">Room name</span>
+                            <input id="room_name" class="form-control" type="text"  name="room_name" autocomplete="off">
                         </div>
                     </div>
                 </div>
                 <div class="row justify-content-center mb-3">
                     <div class="col-md-9">
                         <button id="create" class="btn btn-outline-primary w-100" type="submit">Chatroom erstellen</button>
-                    </div>
-                </div>
-                <div class="row  justify-content-center">
-                    <div class="col-md-9">
-                        <button id="join" class="btn btn-outline-primary w-100" type="submit">Chatroom beitreten</button>
                     </div>
                 </div>
             </form>

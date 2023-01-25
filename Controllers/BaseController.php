@@ -3,7 +3,7 @@
 
 class BaseController
 {
-    protected $startsSession = false;
+    protected $startsSession = true;
     protected $view = false;
     protected $error = false;
 

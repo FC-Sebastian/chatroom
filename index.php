@@ -13,6 +13,7 @@ if (isset($_REQUEST['action'])) {
         try {
             $controllerObject->$action();
         } catch (Throwable $exc) {
+            $controllerObject = new Foyer();
             $controllerObject->setErrorMessage($exc->getMessage());
         }
 
