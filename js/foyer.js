@@ -12,7 +12,7 @@ $(document).ready(function () {
 });
 
 function createClick() {
-    form.attr("action","http://localhost/chatroom/create/");
+    form.attr("action","http://localhost/chatroom/create/createRoom/");
 }
 
 function joinClick() {

@@ -59,8 +59,11 @@ class BaseModel
         }
     }
 
-    public function loadByColumnValue($sColumn, $sValue, $iLimit = false) {
+    public function loadByColumnValue($sColumn, $sValue, $iLimit = false, $sOrderColumn = false) {
         $sQuery = "SELECT * FROM ".$this->getTableName()." WHERE ".$sColumn."='".$sValue."'";
+        if ($sOrderColumn !== false) {
+            $sQuery .= " ORDER BY ".$sOrderColumn;
+        }
         if ($iLimit !== false) {
             $sQuery .= " LIMIT ".$iLimit;
         }
@@ -75,7 +78,7 @@ class BaseModel
                 $setString = "set" . $key;
                 $oModel->$setString($value);
             }
-            $aReturnArray[] = $oModel;
+            $aReturnArray[] = $oModel->data;
         }
         return $aReturnArray;
     }

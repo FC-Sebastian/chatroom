@@ -2,8 +2,5 @@
 
 class ChatRoom extends BaseModel
 {
-    public function getTableName()
-    {
-        return "chat_rooms";
-    }
+    protected $tablename = "chat_rooms";
 }
