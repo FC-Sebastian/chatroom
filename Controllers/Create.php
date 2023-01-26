@@ -5,28 +5,19 @@ class Create extends BaseController
     protected $title = "Create Chatroom";
 
     /**
-     * @throws Exception
+     * creates a new chat-room and sets session-user to given user then redirects to created room
      */
     public function createRoom()
     {
         $sRoomName = $this->getRequestParameter("room_name");
-        if ($sRoomName === false || $sRoomName === "") {
-            throw new Exception("ROOM NAME CANT BE EMPTY");
-        }
-        $oChatRoom = new ChatRoom();
-        if ($oChatRoom->loadByColumnValue("room_name",$sRoomName,1) === false) {
-            $oChatRoom->setRoom_name($sRoomName);
-            $oChatRoom->save();
-            $oActive = new ChatActive();
-            $oActive->setUser($this->getRequestParameter("user"));
-            $oActive->setChat_room_id($oChatRoom->loadByColumnValue("room_name",$sRoomName,1)[0]["id"]);
-            $oActive->save();
 
-        } else {
-            throw new Exception("ROOM NAME '".$sRoomName."' ALREADY IN USE");
-        }
+        $oChatRoom = new ChatRoom();
+        $oChatRoom->setRoom_name($sRoomName);
+        $oChatRoom->save();
+        $_SESSION["user"] = $this->getRequestParameter("user");
 
 
         $this->redirect($this->getUrl("chat/".$sRoomName."/"));
+        exit();
     }
 }

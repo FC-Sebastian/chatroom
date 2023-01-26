@@ -1,22 +1,34 @@
 const send = $("#send");
 const chatDiv = $("#chatDiv");
 const chatInput = $("#chatInput");
+const userList = $("#userList");
 const user = $("#chatHidden").val().slice(0,$("#chatHidden").val().indexOf("|"));
 const roomId = $("#chatHidden").val().slice($("#chatHidden").val().indexOf("|")+1);
-setInterval(reloadMessages,5000);
+setInterval(reloadMessages,intervalTime);
+setInterval(loadActiveUsers,intervalTime);
 
-
+//loading active users and chat messages, adding eventListeners and checking browser
 $(document).ready(function () {
     loadMessages();
-    chatDiv.scrollTop(chatDiv[0].scrollHeight);
-    send.click(function (evt) {
-        evt.stopPropagation();
-        evt.preventDefault();
-        clickedSend();
+    loadActiveUsers();
+    send.click(function () {
+        sendMsg();
     });
+    if (navigator.userAgent.match(/firefox|fxios/i)) {
+        $(window).bind("beforeunload", function () {
+            setUserInactiveFF();
+        });
+    } else {
+        $(window).bind("beforeunload", function () {
+            setUserInactive();
+        });
+    }
 });
 
-function clickedSend() {
+/**
+ * inserts sent message into db via ajax call and loads message contents into chat
+ */
+function sendMsg() {
     if (chatInput.val().length > 0) {
         let params = {
             "type":"POST",
@@ -38,6 +50,9 @@ function clickedSend() {
     }
 }
 
+/**
+ * reloads the chat via ajax call
+ */
 function reloadMessages() {
     let params = {
         "type":"POST",
@@ -52,6 +67,9 @@ function reloadMessages() {
     $.ajax(domain+"index.php", params);
 }
 
+/**
+ * loads chat via ajax call and scrolls to the bottom of chat
+ */
 function loadMessages() {
     let params = {
         "type":"POST",
@@ -65,4 +83,52 @@ function loadMessages() {
         }
     };
     $.ajax(domain+"index.php", params);
+}
+
+/**
+ * loads active users into user list via ajax call
+ */
+function loadActiveUsers() {
+    let params = {
+        "type":"POST",
+        "success": function (response) {
+            userList.html(response);
+        },
+        "data":{
+            "controller":"LoadActiveUsersAjax",
+            "id":roomId
+        }
+    };
+    $.ajax(domain+"index.php", params);
+}
+
+/**
+ * removes active user from db for chromium via async ajax call
+ */
+function setUserInactive() {
+    let params = {
+        "type":"POST",
+        "data": {
+            "controller":"SetUserInactiveAjax",
+            "roomId":roomId,
+            "user":user
+        }
+    };
+    $.ajax(domain+"index.php",params);
+}
+
+/**
+ * removes active user from db for firefox via sync ajax call
+ */
+function setUserInactiveFF() {
+    let params = {
+        "type":"POST",
+        "async":false,
+        "data": {
+            "controller":"SetUserInactiveAjax",
+            "roomId":roomId,
+            "user":user
+        }
+    };
+    $.ajax(domain+"index.php",params);
 }

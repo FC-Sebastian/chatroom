@@ -3,8 +3,8 @@
  * @var $controller Foyer
  */
 ?>
-<div class="row justify-content-center g-1">
-    <div class="card col-md-6">
+<div class="row justify-content-center mb-2">
+    <div class="card col-md-6 g-2">
         <div class="card-body text-center">
             <form id="form" method="post">
                 <h3 class="card-title text-secondary">Chad Chats</h3>
@@ -19,19 +19,22 @@
                 <div class="row justify-content-center mb-3">
                     <div class="col-md-9">
                         <div class="input-group">
-                            <span class="input-group-text">Room name</span>
-                            <input id="room_name" class="form-control" type="text"  name="room_name" autocomplete="off">
+                            <span class="input-group-text">Chatroom name</span>
+                            <input id="room_name" class="form-control" type="text"  name="room_name" required="required" autocomplete="off">
                         </div>
                     </div>
                 </div>
                 <div class="row justify-content-center mb-3">
                     <div class="col-md-9">
-                        <button id="create" class="btn btn-outline-primary w-100" type="submit">Chatroom erstellen</button>
+                        <button id="create" class="btn btn-outline-primary w-100" type="submit">create Chatroom</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+</div>
+<div id="chatRooms" class="row g-1">
+
 </div>
 <script src="<?= $controller->getUrl("js/foyer.js") ?>"></script>
 

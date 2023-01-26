@@ -12,7 +12,10 @@
         <link rel="stylesheet" href="<?php echo $controller->getUrl("css/myCss.css");?>">
         <script src="<?= $controller->getUrl("js/jquery-3.6.3.js") ?>"></script>
         <script src="<?= $controller->getUrl("js/bootstrap.js") ?>"></script>
-        <script> const domain = "<?= $controller->getUrl() ?>"</script>
+        <script>
+            const domain = "<?= $controller->getUrl() ?>";
+            const intervalTime = 1000;
+        </script>
     </head>
     <body class="bg-primary bg-opacity-10">
 
@@ -26,5 +29,5 @@
             </div>
         </div>
     <?php endif;?>
-        <div class="container  min-vh-100 shadow bg-white">
+        <div class="container min-vh-100 shadow bg-white">
 
