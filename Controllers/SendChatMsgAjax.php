@@ -1,8 +1,12 @@
 <?php
 
-class SendChatMsgAjax extends AjaxSqlQueryController
+class SendChatMsgAjax extends AjaxBaseController
 {
 
+    /**
+     * saves the sent message into db and echoes it as <div> string
+     * @return void
+     */
     protected function executeSqlQuery()
     {
         $oChatMsg = new ChatMessage();
@@ -13,16 +17,19 @@ class SendChatMsgAjax extends AjaxSqlQueryController
         $aData["created_at"] = date("Y.m.d H:i:s",time());
         $oChatMsg->data = $aData;
         $oChatMsg->save();
-        $sMsgString ='<div class="row justify-content-end">
-                        <div class="col-sm-6 gx-4 mb-2">
-                            <div class="card shadow ">
-                                <div class="card-body">
-                                    <h6 class="card-title">'.$aData["user"].':</h6>
-                                    <span class="card-text">'.$aData["msg_text"].'</span>
-                                </div>
+        $sMsgString ='
+                <div class="col-12">
+                    <div class="row justify-content-end g-0">
+                    <div class="col-sm-8 mb-2 g-2">
+                        <div class="card shadow ">
+                            <div class="card-body">
+                                <h6 class="card-title">'.$aData["user"].':</h6>
+                                <span class="card-text">'.$aData["msg_text"].'</span>
                             </div>
                         </div>
-                    </div>';
+                    </div>
+                </div>
+                </div>';
         echo ($sMsgString);
     }
 }

@@ -20,7 +20,7 @@ class BaseController
 
     public function __construct()
     {
-        if ($this->startsSession === true) {
+        if ($this->startsSession === true && session_status() !== 2) {
             session_start();
         }
     }

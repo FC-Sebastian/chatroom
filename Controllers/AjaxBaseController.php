@@ -1,6 +1,6 @@
 <?php
 
-abstract class AjaxSqlQueryController extends BaseController
+abstract class AjaxBaseController extends BaseController
 {
     public function render()
     {
