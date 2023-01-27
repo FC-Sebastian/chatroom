@@ -8,4 +8,4 @@ RewriteBase /chatroom/
 RewriteRule ^create/([a-zA-Z]+) index.php?controller=create&action=$1 [NC,L]
 RewriteRule ^create index.php?controller=create [NC,L]
 RewriteRule ^chat/([0-9a-zA-Z]+) index.php?controller=chat&chat=$1 [NC,L]
-RewriteRule ^join/([0-9]+)/([0-9a-zA-Z]+) index.php?controller=join&roomId=$1&user=$2
+RewriteRule ^join/([0-9a-zA-Z]+)/([0-9a-zA-Z]+) index.php?controller=join&roomName=$1&user=$2

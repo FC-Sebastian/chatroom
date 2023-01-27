@@ -11,7 +11,7 @@
         <ul id="userList" class="vh-100 overflow-auto list-group pt-2"></ul>
     </div>
     <div class="col-8 vh-100 pt-2">
-        <div id="chatDiv" class="row h-90 rounded bg-secondary bg-opacity-10 overflow-auto g-0"></div>
+        <div id="chatDiv" class="row h-90 border rounded bg-secondary bg-opacity-10 overflow-auto g-0 align-content-start"></div>
         <div class="row">
             <div class="col mt-2">
                 <div class="input-group">

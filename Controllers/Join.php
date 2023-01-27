@@ -8,14 +8,12 @@ class Join extends BaseController
      */
     public function render()
     {
-        $sRoomId = $this->getRequestParameter("roomId");
+        $sRoomName = $this->getRequestParameter("roomName");
         $sUser = $this->getRequestParameter("user");
 
-        $oChatroom = new ChatRoom();
-        $oChatroom->loaById($sRoomId);
         $_SESSION["user"] = $sUser;
 
-        $this->redirect($this->getUrl("chat/".$oChatroom->data["room_name"]."/"));
+        $this->redirect($this->getUrl("chat/".$sRoomName."/"));
         exit();
     }
 }
