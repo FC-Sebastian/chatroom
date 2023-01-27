@@ -2,8 +2,10 @@ const send = $("#send");
 const chatDiv = $("#chatDiv");
 const chatInput = $("#chatInput");
 const userList = $("#userList");
+const notificationSelect = $("#notificationSelect");
 const user = $("#chatHidden").val().slice(0,$("#chatHidden").val().indexOf("|"));
 const roomId = $("#chatHidden").val().slice($("#chatHidden").val().indexOf("|")+1);
+let lastId = false;
 setInterval(reloadMessages,intervalTime);
 setInterval(loadActiveUsers,intervalTime);
 
@@ -62,7 +64,15 @@ function reloadMessages() {
     let params = {
         "type":"POST",
         "success": function (response) {
-            chatDiv.html(response);
+            let responseJson = JSON.parse(response);
+            if (responseJson.lastId !== lastId) {
+                lastId = responseJson.lastId;
+                chatDiv.html(responseJson.text);
+                chatDiv.scrollTop(chatDiv[0].scrollHeight);
+                if (responseJson.notification === true) {
+                    playNotification();
+                }
+            }
         },
         "data":{
             "controller":"LoadChatMsgsAjax",
@@ -79,7 +89,9 @@ function loadMessages() {
     let params = {
         "type":"POST",
         "success": function (response) {
-            chatDiv.html(response);
+            let responseJson = JSON.parse(response);
+            chatDiv.html(responseJson.text);
+            lastId = responseJson.lastId;
             chatDiv.scrollTop(chatDiv[0].scrollHeight);
         },
         "data":{
@@ -136,4 +148,11 @@ function setUserInactiveFF() {
         }
     };
     $.ajax(domain+"index.php",params);
+}
+
+function playNotification() {
+    if (notificationSelect.val() === "notifications active" || (notificationSelect.val() === "notifications when in background" && document.visibilityState === "hidden")) {
+        let notification = new Audio(domain+"sounds/notification.mp3");
+        notification.play();
+    }
 }
