@@ -16,8 +16,11 @@ class LoadChatMsgsAjax extends AjaxBaseController
         $sMsgsDivsString = "";
         if ($aMsgs !== false) {
              foreach ($aMsgs as $aChatMsg) {
-                 $sMsgsDivsString .=
-                '<div class="col-12">
+                 if ($aChatMsg["user"] === "") {
+                     $sMsgsDivsString .= "<div class='text-center'><span>".$aChatMsg["msg_text"]."</span></div>";
+                 } else {
+                     $sMsgsDivsString .=
+                         '<div class="col-12">
                     <div class="row '.( $_SESSION["user"] === $aChatMsg["user"] ? 'justify-content-end' : '' ).' g-0">
                         <div class="col-sm-8 mb-2 g-2">
                             <div class="card shadow ">
@@ -29,6 +32,7 @@ class LoadChatMsgsAjax extends AjaxBaseController
                         </div>
                     </div>
                 </div>';
+                 }
              }
         }
         echo $sMsgsDivsString;

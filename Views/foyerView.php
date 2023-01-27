@@ -26,15 +26,17 @@
                 </div>
                 <div class="row justify-content-center mb-3">
                     <div class="col-md-9">
-                        <button id="create" class="btn btn-outline-primary w-100" type="submit">create Chatroom</button>
+                        <button id="create" class="btn btn-outline-primary w-100" type="submit">Create chatroom</button>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-9">
+                        <button id="join" class="btn btn-outline-primary w-100" type="submit">Join chatroom</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-</div>
-<div id="chatRooms" class="row g-1">
-
 </div>
 <script src="<?= $controller->getUrl("js/foyer.js") ?>"></script>
 

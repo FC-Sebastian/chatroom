@@ -17,6 +17,7 @@ class Chat extends BaseController
         $sChatroomName = $this->getRequestParameter("chat");
         $oChatroom = new ChatRoom();
         $oActive = new ChatActive();
+        $oChatMsg = new ChatMessage();
 
         $this->aChatRoom = $oChatroom->loadByColumnValue("room_name", $sChatroomName,1)[0];
         $this->title = $this->aChatRoom["room_name"];
@@ -25,6 +26,10 @@ class Chat extends BaseController
             $oActive->setUser($_SESSION["user"]);
             $oActive->setChat_room_id($this->aChatRoom["id"]);
             $oActive->save();
+            $oChatMsg->setChat_room_id($this->aChatRoom["id"]);
+            $oChatMsg->setMsg_text($_SESSION["user"]." joined the chat");
+            $oChatMsg->setCreated_at(date("Y.m.d H:i:s",time()));
+            $oChatMsg->save();
         }
 
         parent::render();

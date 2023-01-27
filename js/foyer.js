@@ -1,9 +1,8 @@
 const form = $("#form");
 const create = $("#create");
-const chatRoomsDiv = $("#chatRooms");
+const join = $("#join");
 const userInput = $("#username");
 const roomInput = $("#room_name");
-setInterval(loadRooms,intervalTime);
 
 //adding eventListener and loading chat-rooms
 $(document).ready(function () {
@@ -12,7 +11,11 @@ $(document).ready(function () {
        e.preventDefault();
        createClick();
    });
-   loadRooms();
+   join.click(function (e){
+       e.stopPropagation();
+       e.preventDefault();
+       joinClick();
+   });
 });
 
 /**
@@ -48,57 +51,42 @@ function createClick() {
 
 /**
  * validates username for clicked chatroom alerts if invalid
- * otherwise submits form to joins clicked chat-room
- * @param roomId
+ * otherwise submits form to join chatroom
  */
-function joinClick(roomId) {
+function joinClick() {
     if (/^[a-zA-Z0-9]*$/.test(userInput.val()) === true) {
-        if (userInput.val().length > 0) {
-            let params = {
-                "type":"POST",
-                "data":{
-                    "controller":"ValidateJoinAjax",
-                    "roomId":roomId,
-                    "user":userInput.val()
-                },
-                "success":function (response) {
-                    if (response === "valid") {
-                        form.attr("action","http://localhost/chatroom/join/"+roomId+"/"+userInput.val()+"/");
-                        form.submit();
-                    } else {
-                        alert("there already is a " + userInput.val() + " in this room")
-                    }
+        if (/^[a-zA-Z0-9]*$/.test(roomInput.val()) === true) {
+            if (userInput.val().length > 0) {
+                if (roomInput.val().length > 0) {
+                    let params = {
+                        "type":"POST",
+                        "data":{
+                            "controller":"ValidateJoinAjax",
+                            "roomName":roomInput.val(),
+                            "user":userInput.val()
+                        },
+                        "success":function (response) {
+                            if (response === "valid") {
+                                form.attr("action","http://localhost/chatroom/join/"+roomInput.val()+"/"+userInput.val()+"/");
+                                form.submit();
+                            } else if (response === "noRoom") {
+                                alert("Chatroom '"+roomInput.val()+"' not found")
+                            } else {
+                                alert("there already is a " + userInput.val() + " in this room")
+                            }
+                        }
+                    };
+                    $.ajax(domain+"index.php",params);
+                } else {
+                    alert("Chatroom name cant be empty");
                 }
-            };
-            $.ajax(domain+"index.php",params);
-
+            } else {
+                alert("Username cant be empty");
+            }
         } else {
-            alert("please enter a username");
+            alert("Chatroom cant contain special characters or spaces");
         }
     } else {
         alert("username cant contain special characters or spaces");
     }
-}
-
-/**
- * loads chatroom buttons via ajax call loads them into chatRoomsDiv
- */
-function loadRooms()
-{
-    let params = {
-        "type":"POST",
-        "data":{
-            "controller":"LoadChatRoomsAjax"
-        },
-        "success":function (response) {
-            chatRoomsDiv.html(response);
-            let roomButtons = $(".room-button");
-            roomButtons.each(function () {
-                $(this).click(function (){
-                    joinClick($(this).val());
-                });
-            });
-        }
-    };
-    $.ajax(domain+"index.php",params);
 }
