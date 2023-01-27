@@ -23,6 +23,11 @@ $(document).ready(function () {
             setUserInactive();
         });
     }
+    chatInput.bind("keydown",function (evt) {
+        if (evt.key === "Enter") {
+            sendMsg();
+        }
+    });
 });
 
 /**
