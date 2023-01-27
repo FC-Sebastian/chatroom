@@ -4,11 +4,13 @@
  */
 ?>
 <div class="row">
-    <div class="col-12 h-auto">
-
-    </div>
-    <div class="col-4">
-        <ul id="userList" class="vh-100 overflow-auto list-group pt-2"></ul>
+    <div class="col-4 vh-100 pt-2">
+        <select id="notificationSelect" class="form-select mb-2">
+            <option>notifications active</option>
+            <option>notifications when in background</option>
+            <option>notifications inactive</option>
+        </select>
+        <ul id="userList" class="overflow-auto list-group"></ul>
     </div>
     <div class="col-8 vh-100 pt-2">
         <div id="chatDiv" class="row h-90 border rounded bg-secondary bg-opacity-10 overflow-auto g-0 align-content-start"></div>
