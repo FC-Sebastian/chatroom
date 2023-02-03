@@ -5,6 +5,8 @@ const userList = $("#userList");
 const notificationSelect = $("#notificationSelect");
 const user = $("#chatHidden").val().slice(0,$("#chatHidden").val().indexOf("|"));
 const roomId = $("#chatHidden").val().slice($("#chatHidden").val().indexOf("|")+1);
+const allowedFileTypes = ["image/jpeg", "image/png", "image/gif", "image/svg+xml", "image/jpg", "	image/webp"];
+const fileInput = $("#picUpload");
 let lastId = false;
 setInterval(reloadMessages,intervalTime);
 setInterval(loadActiveUsers,intervalTime);
@@ -36,21 +38,26 @@ $(document).ready(function () {
  * inserts sent message into db via ajax call and loads message contents into chat
  */
 function sendMsg() {
-    if (chatInput.val().length > 0) {
+    if (chatInput.val().length > 0 || (fileInput[0].files[0] !== undefined && $.inArray(fileInput[0].files[0].type,allowedFileTypes) > -1)) {
+        let data = new FormData;
+        data.append("text",chatInput.val());
+        data.append("user",user);
+        data.append("roomId",roomId);
+        data.append("upload",fileInput[0].files[0]);
+        data.append("controller","SendChatMsgAjax");
         let params = {
             "type":"POST",
-            "data":{
-                "text": chatInput.val(),
-                "user": user,
-                "roomId": roomId,
-                "controller": "SendChatMsgAjax",
-                },
-            "success": function (response) {
+            "enctype":"multipart/form-data",
+            "dataType":"json",
+            "contentType":false,
+            "data":data,
+            "processData":false,
+            "complete": function (response) {
                 chatInput.val("");
+                fileInput.val("");
                 let newMsg = $($.parseHTML(response));
                 chatDiv.append(newMsg);
-                chatDiv.scrollTop(chatDiv[0].scrollHeight);
-
+                scrollToChatBottom();
             }
         };
         $.ajax(domain+"index.php", params);
@@ -68,10 +75,10 @@ function reloadMessages() {
             if (responseJson.lastId !== lastId) {
                 lastId = responseJson.lastId;
                 chatDiv.html(responseJson.text);
-                chatDiv.scrollTop(chatDiv[0].scrollHeight);
                 if (responseJson.notification === true) {
                     playNotification();
                 }
+                scrollToChatBottom();
             }
         },
         "data":{
@@ -92,7 +99,7 @@ function loadMessages() {
             let responseJson = JSON.parse(response);
             chatDiv.html(responseJson.text);
             lastId = responseJson.lastId;
-            chatDiv.scrollTop(chatDiv[0].scrollHeight);
+            scrollToChatBottom();
         },
         "data":{
             "controller":"LoadChatMsgsAjax",
@@ -155,4 +162,10 @@ function playNotification() {
         let notification = new Audio(domain+"sounds/notification.mp3");
         notification.play();
     }
+}
+
+function scrollToChatBottom() {
+    setTimeout(function (){
+        chatDiv.scrollTop(chatDiv[0].scrollHeight);
+    },50)
 }

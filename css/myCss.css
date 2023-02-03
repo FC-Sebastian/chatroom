@@ -1,3 +1,6 @@
 .h-90 {
     height: 90% !important;
 }
+.rotate-45 {
+    transform: rotateY(0deg) rotate(43deg);
+}

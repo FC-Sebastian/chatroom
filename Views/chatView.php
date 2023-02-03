@@ -18,11 +18,15 @@
             <div class="col mt-2">
                 <div class="input-group">
                     <textarea id="chatInput" class="form-control" name="chatText"></textarea>
-                    <button id="send" class="btn btn-primary" type="button"><img src="<?= $controller->getUrl("icons/send.svg") ?>" alt="Send"></button>
+                    <label for="picUpload" class="btn btn-primary d-flex align-items-center">
+                        <img class="h-50" src="<?= $controller->getUrl("icons/paperclip.svg") ?>" alt="attach">
+                    </label>
+                    <span class="badge bg-secondary"></span>
+                    <input id="picUpload" class="d-none" type="file" accept="image/jpeg, image/png, image/gif, image/svg+xml, image/jpg, image/webp">
+                    <button id="send" class="btn btn-primary" type="button"><img class="rotate-45" src="<?= $controller->getUrl("icons/send.svg") ?>" alt="send"></button>
                 </div>
             </div>
         </div>
-
     </div>
     <input id="chatHidden" type="hidden" value="<?= $_SESSION["user"]."|".$controller->aChatRoom["id"] ?>">
 </div>
