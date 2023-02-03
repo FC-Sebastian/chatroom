@@ -23,13 +23,16 @@ class LoadChatMsgsAjax extends AjaxBaseController
                         $sMsgsDivsString .= "<div class='text-center'><span>".$aChatMsg["msg_text"]."</span></div>";
                     } else {
                         $sMsgsDivsString .=
-                            '<div class="col-12">
+                        '<div class="col-12">
                             <div class="row '.( $_SESSION["user"] === $aChatMsg["user"] ? 'justify-content-end' : '' ).' g-0">
                                 <div class="col-sm-8 mb-2 g-2">
                                     <div class="card shadow ">
                                         <div class="card-body">
-                                            <h6 class="card-title">'.$aChatMsg["user"].':</h6>
-                                            <span class="card-text">'.$aChatMsg["msg_text"].'</span>
+                                            <h6 class="card-title">'.$aChatMsg["user"].':</h6>';
+                        if ($aChatMsg["picture_url"] !== null && $aChatMsg["picture_url"] !== "") {
+                            $sMsgsDivsString .= '<img class="img-fluid" src="'.$aChatMsg["picture_url"].'">';
+                        }
+                        $sMsgsDivsString .= '<span class="card-text">'.$aChatMsg["msg_text"].'</span>
                                         </div>
                                     </div>
                                 </div>
