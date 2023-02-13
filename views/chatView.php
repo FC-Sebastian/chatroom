@@ -22,7 +22,7 @@
                         <img class="h-50" src="<?= $controller->getUrl("icons/paperclip.svg") ?>" alt="attach">
                     </label>
                     <span class="badge bg-secondary"></span>
-                    <input id="picUpload" class="d-none" type="file" accept="image/jpeg, image/png, image/gif, image/svg+xml, image/jpg, image/webp">
+                    <input id="picUpload" class="d-none" type="file" accept="image/*">
                     <button id="send" class="btn btn-primary" type="button"><img class="rotate-45" src="<?= $controller->getUrl("icons/send.svg") ?>" alt="send"></button>
                 </div>
             </div>

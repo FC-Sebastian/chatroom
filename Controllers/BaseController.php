@@ -49,7 +49,7 @@ class BaseController
             throw new Exception("NO VIEW FOUND");
         }
 
-        $viewPath = __DIR__ . "/../Views/" . $this->view . ".php";
+        $viewPath = __DIR__ . "/../views/" . $this->view . ".php";
         if (!file_exists($viewPath)) {
             throw new Exception("VIEW FILE NOT FOUND");
         }
@@ -67,9 +67,9 @@ class BaseController
         $output = ob_get_contents();
         ob_end_clean();
 
-        include __DIR__ . "/../Views/header.php";
+        include __DIR__ . "/../views/header.php";
         echo $output;
-        include __DIR__ . "/../Views/footer.php";
+        include __DIR__ . "/../views/footer.php";
     }
 
     protected function redirect($url)
