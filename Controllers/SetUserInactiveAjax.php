@@ -17,10 +17,19 @@ class SetUserInactiveAjax extends AjaxBaseController
         if ($oActive->loadList($sWhere,1) !== false) {
             $sActiveId = $oActive->loadList($sWhere,1)[0]["id"];
             $oActive->delete($sActiveId);
-            $oChatMsg->setChat_room_id($sRoomId);
-            $oChatMsg->setMsg_text($sUser." left the chat");
-            $oChatMsg->setCreated_at(date("Y.m.d H:i:s",time()));
-            $oChatMsg->save();
+            if ($oActive->loadList("(chat_room_id = '".$sRoomId."')",1) !== false) {
+                $this->sendUserLeftNotification($oChatMsg, $sRoomId, $sUser);
+            } else {
+                $oChatMsg->deleteJoinNotificationsByRoomId($sRoomId);
+            }
         }
+    }
+
+    protected function sendUserLeftNotification ($oChatMsg, $sRoomId, $sUser)
+    {
+        $oChatMsg->setChat_room_id($sRoomId);
+        $oChatMsg->setMsg_text($sUser." left the chat");
+        $oChatMsg->setCreated_at(date("Y.m.d H:i:s",time()));
+        $oChatMsg->save();
     }
 }
