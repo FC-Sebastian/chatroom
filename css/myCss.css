@@ -4,3 +4,7 @@
 .rotate-45 {
     transform: rotateY(0deg) rotate(43deg);
 }
+
+#preview:hover {
+    opacity: 50%;
+}

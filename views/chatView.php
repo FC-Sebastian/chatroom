@@ -16,6 +16,9 @@
         <div id="chatDiv" class="row h-90 border rounded bg-secondary bg-opacity-10 overflow-auto g-0 align-content-start"></div>
         <div class="row">
             <div class="col mt-2">
+                <div id="previewDiv" class="position-relative text-center">
+                    <img id="preview" class="position-absolute bottom-100 start-0 w-75 rounded" src="">
+                </div>
                 <div class="input-group">
                     <textarea id="chatInput" class="form-control" name="chatText"></textarea>
                     <label for="picUpload" class="btn btn-primary d-flex align-items-center">

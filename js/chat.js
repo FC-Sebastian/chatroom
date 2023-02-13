@@ -5,8 +5,8 @@ const userList = $("#userList");
 const notificationSelect = $("#notificationSelect");
 const user = $("#chatHidden").val().slice(0,$("#chatHidden").val().indexOf("|"));
 const roomId = $("#chatHidden").val().slice($("#chatHidden").val().indexOf("|")+1);
-const allowedFileTypes = ["image/jpeg", "image/png", "image/gif", "image/svg+xml", "image/jpg", "	image/webp"];
 const fileInput = $("#picUpload");
+const previewImg = $("#preview");
 let lastId = false;
 setInterval(reloadMessages,intervalTime);
 setInterval(loadActiveUsers,intervalTime);
@@ -17,6 +17,13 @@ $(document).ready(function () {
     loadActiveUsers();
     send.click(function () {
         sendMsg();
+    });
+    fileInput.on("change",function () {
+        showPreview();
+    });
+    previewImg.click(function (){
+        previewImg.attr("src","");
+        fileInput.val("");
     });
     if (navigator.userAgent.match(/firefox|fxios/i)) {
         $(window).bind("beforeunload", function () {
@@ -38,7 +45,7 @@ $(document).ready(function () {
  * inserts sent message into db via ajax call and loads message contents into chat
  */
 function sendMsg() {
-    if (chatInput.val().length > 0 || (fileInput[0].files[0] !== undefined && $.inArray(fileInput[0].files[0].type,allowedFileTypes) > -1)) {
+    if (chatInput.val().length > 0 || (fileInput[0].files[0] !== undefined && fileInput[0].files[0].type.slice(0,6) === "image/")) {
         let data = new FormData;
         data.append("text",chatInput.val());
         data.append("user",user);
@@ -55,6 +62,7 @@ function sendMsg() {
             "success": function (response) {
                 chatInput.val("");
                 fileInput.val("");
+                previewImg.attr("src", "");
                 let newMsg = $($.parseHTML(response));
                 chatDiv.append(newMsg);
                 scrollToChatBottom();
@@ -168,4 +176,12 @@ function scrollToChatBottom() {
     setTimeout(function (){
         chatDiv.scrollTop(chatDiv[0].scrollHeight);
     },50)
+}
+
+function showPreview()
+{
+    if (fileInput[0].files[0].type.slice(0,6) === "image/") {
+        let url = window.URL.createObjectURL(fileInput[0].files[0]);
+        previewImg.attr("src", url);
+    }
 }
