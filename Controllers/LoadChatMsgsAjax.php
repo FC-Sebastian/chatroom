@@ -22,6 +22,7 @@ class LoadChatMsgsAjax extends AjaxBaseController
                     if ($aChatMsg["user"] === "") {
                         $sMsgsDivsString .= "<div class='text-center'><span>".$aChatMsg["msg_text"]."</span></div>";
                     } else {
+                        $text = $this->decrypt($aChatMsg["msg_text"], Conf::getParam("key"));
                         $sMsgsDivsString .=
                         '<div class="col-12">
                             <div class="row '.( $_SESSION["user"] === $aChatMsg["user"] ? 'justify-content-end' : '' ).' g-0">
@@ -30,9 +31,9 @@ class LoadChatMsgsAjax extends AjaxBaseController
                                         <div class="card-body">
                                             <h6 class="card-title">'.$aChatMsg["user"].':</h6>';
                         if ($aChatMsg["picture_url"] !== null && $aChatMsg["picture_url"] !== "") {
-                            $sMsgsDivsString .= '<img class="img-fluid" src="'.$aChatMsg["picture_url"].'">';
+                            $sMsgsDivsString .= '<img class="img-fluid" src="'.$this->decrypt($aChatMsg["picture_url"], Conf::getParam("key")).'">';
                         }
-                        $sMsgsDivsString .= '<span class="card-text">'.$aChatMsg["msg_text"].'</span>
+                        $sMsgsDivsString .= '<span class="card-text">'.$text.'</span>
                                         </div>
                                     </div>
                                 </div>
@@ -48,5 +49,11 @@ class LoadChatMsgsAjax extends AjaxBaseController
         }
         $aEchoArray = ["text" => $sMsgsDivsString, "notification" => $blPlaySound, "lastId" => $lastId];
         echo json_encode($aEchoArray);
+    }
+
+    protected function decrypt($data, $key)
+    {
+        list($enc, $iv) = explode("::", base64_decode($data),2);
+        return openssl_decrypt($enc, "aes-256-cbc", $key, 0, $iv);
     }
 }

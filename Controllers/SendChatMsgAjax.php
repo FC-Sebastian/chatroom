@@ -13,7 +13,8 @@ class SendChatMsgAjax extends AjaxBaseController
         $aData = [];
         $aData["chat_room_id"] = $this->getRequestParameter("roomId");
         $aData["user"] = $this->getRequestParameter("user");
-        $aData["msg_text"] = $this->getRequestParameter("text");
+        $text = $this->getRequestParameter("text");
+        $aData["msg_text"] = $this->encrypt($text, Conf::getParam("key"));
         $aData["picture_url"] = $this->getFileUrlFromUpload();
         $aData["created_at"] = date("Y.m.d H:i:s",time());
         $oChatMsg->data = $aData;
@@ -29,7 +30,7 @@ class SendChatMsgAjax extends AjaxBaseController
             $sMsgString .= '<img class="img-fluid" src="'.$aData["picture_url"].'">';
         }
         $sMsgString .=
-                                '<span class="card-text">'.$aData["msg_text"].'</span>
+                                '<span class="card-text">'.$text.'</span>
                             </div>
                         </div>
                     </div>
@@ -42,16 +43,22 @@ class SendChatMsgAjax extends AjaxBaseController
     {
         $tmppath = $_FILES["upload"]["tmp_name"];
         $originalName = $_FILES["upload"]["name"];
-        $extension = substr($originalName,strrpos(".",$originalName));
+        $extension = substr($originalName,strrpos($originalName, "."));
         $name = $this->getRequestParameter("roomId").$this->getRequestParameter("user").date("Y_m_d-H_i_s",time()).$extension;
         $type = $_FILES["upload"]["type"];
         $locationbegin = __DIR__ . '\..\pics\\';
         $location = $locationbegin . $name;
-        $allowed = ["image/jpeg", "image/png", "image/gif", "image/svg+xml", "image/jpg", "	image/webp"];
-        if (in_array($type, $allowed)) {
+        if (substr($type, 0, 6) === "image/") {
             move_uploaded_file($tmppath, $location);
-            return $this->getUrl('pics/'.$name);
+            return $this->encrypt($this->getUrl('pics/'.$name), Conf::getParam("key"));
         }
         return "";
+    }
+
+    protected function encrypt($data, $key)
+    {
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length("aes-256-cbc"));
+        $enc = openssl_encrypt($data, "aes-256-cbc", $key, 0,$iv);
+        return base64_encode($enc."::".$iv);
     }
 }
