@@ -52,7 +52,7 @@ function sendMsg() {
             "contentType":false,
             "data":data,
             "processData":false,
-            "complete": function (response) {
+            "success": function (response) {
                 chatInput.val("");
                 fileInput.val("");
                 let newMsg = $($.parseHTML(response));
