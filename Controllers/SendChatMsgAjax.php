@@ -43,7 +43,7 @@ class SendChatMsgAjax extends AjaxBaseController
     {
         $tmppath = $_FILES["upload"]["tmp_name"];
         $originalName = $_FILES["upload"]["name"];
-        $extension = substr($originalName,strrpos(".",$originalName));
+        $extension = substr($originalName,strrpos($originalName, "."));
         $name = $this->getRequestParameter("roomId").$this->getRequestParameter("user").date("Y_m_d-H_i_s",time()).$extension;
         $type = $_FILES["upload"]["type"];
         $locationbegin = __DIR__ . '\..\pics\\';
