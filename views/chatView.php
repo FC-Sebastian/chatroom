@@ -5,11 +5,14 @@
 ?>
 <div class="row">
     <div class="col-4 vh-100 pt-2">
-        <select id="notificationSelect" class="form-select mb-2">
-            <option>notifications active</option>
-            <option>notifications when in background</option>
-            <option>notifications inactive</option>
-        </select>
+        <div class="row g-2 mb-2">
+            <select id="notificationSelect" class="form-select">
+                <option>notification sound active</option>
+                <option>notification sound when in background</option>
+                <option>notification sound inactive</option>
+            </select>
+            <button id="push" class="btn btn-primary">get push notifications</button>
+        </div>
         <ul id="userList" class="overflow-auto list-group"></ul>
     </div>
     <div class="col-8 vh-100 pt-2">

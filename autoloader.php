@@ -5,6 +5,7 @@ function autoload($class) {
         'Classes',
         'Controllers',
         'Models',
+        'Traits'
     ];
     foreach ($folders as $folder) {
         $path = __DIR__."/".$folder."/".$class.".php";

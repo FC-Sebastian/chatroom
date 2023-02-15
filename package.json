@@ -1,0 +1,29 @@
+{
+  "name": "chatroom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FC-Sebastian/chatroom.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FC-Sebastian/chatroom/issues"
+  },
+  "homepage": "http://localhost/chatroom/",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jquery": "^3.6.3",
+    "jsdom": "^21.1.0",
+    "mysql": "^2.18.1",
+    "web-push": "^3.5.0"
+  }
+}
