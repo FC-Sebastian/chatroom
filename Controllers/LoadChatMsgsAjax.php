@@ -2,6 +2,7 @@
 
 class LoadChatMsgsAjax extends AjaxBaseController
 {
+    use Decryption;
 
     /**
      * loads list of chat messages by chat_room_id and echoes them as <div> string
@@ -49,11 +50,5 @@ class LoadChatMsgsAjax extends AjaxBaseController
         }
         $aEchoArray = ["text" => $sMsgsDivsString, "notification" => $blPlaySound, "lastId" => $lastId];
         echo json_encode($aEchoArray);
-    }
-
-    protected function decrypt($data, $key)
-    {
-        list($enc, $iv) = explode("::", base64_decode($data),2);
-        return openssl_decrypt($enc, "aes-256-cbc", $key, 0, $iv);
     }
 }

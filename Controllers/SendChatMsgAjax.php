@@ -2,6 +2,7 @@
 
 class SendChatMsgAjax extends AjaxBaseController
 {
+    use Encryption;
 
     /**
      * saves the sent message into db and echoes it as <div> string
@@ -19,24 +20,6 @@ class SendChatMsgAjax extends AjaxBaseController
         $aData["created_at"] = date("Y.m.d H:i:s",time());
         $oChatMsg->data = $aData;
         $oChatMsg->save();
-        $sMsgString =
-            '<div class="col-12">
-                <div class="row justify-content-end g-0">
-                    <div class="col-sm-8 mb-2 g-2">
-                        <div class="card shadow ">
-                            <div class="card-body">
-                                <h6 class="card-title">'.$aData["user"].':</h6>';
-        if (!empty($aData["picture_url"])) {
-            $sMsgString .= '<img class="img-fluid" src="'.$aData["picture_url"].'">';
-        }
-        $sMsgString .=
-                                '<span class="card-text">'.$text.'</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>';
-        echo ($sMsgString);
     }
 
     protected function getFileUrlFromUpload()
@@ -53,12 +36,5 @@ class SendChatMsgAjax extends AjaxBaseController
             return $this->encrypt($this->getUrl('pics/'.$name), Conf::getParam("key"));
         }
         return "";
-    }
-
-    protected function encrypt($data, $key)
-    {
-        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length("aes-256-cbc"));
-        $enc = openssl_encrypt($data, "aes-256-cbc", $key, 0,$iv);
-        return base64_encode($enc."::".$iv);
     }
 }

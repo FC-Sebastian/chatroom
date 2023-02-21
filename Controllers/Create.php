@@ -17,7 +17,7 @@ class Create extends BaseController
         $_SESSION["user"] = $this->getRequestParameter("user");
 
 
-        $this->redirect($this->getUrl("chat/".$sRoomName."/"));
+        $this->redirect($this->getUrl("index.php?controller=Chat&chat=".$sRoomName));
         exit();
     }
 }

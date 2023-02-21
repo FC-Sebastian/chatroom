@@ -6,7 +6,7 @@
 <div class="row justify-content-center mb-2">
     <div class="card col-md-6 g-2">
         <div class="card-body text-center">
-            <form id="form" method="post">
+            <form id="form" action="<?= $controller->getUrl("index.php") ?>" method="post">
                 <h3 class="card-title text-secondary">Chad Chats</h3>
                 <div class="row justify-content-center mb-3">
                     <div class="col-md-9">
@@ -34,6 +34,7 @@
                         <button id="join" class="btn btn-outline-primary w-100" type="submit">Join chatroom</button>
                     </div>
                 </div>
+                <input id="controller" type="hidden" name="controller">
             </form>
         </div>
     </div>
