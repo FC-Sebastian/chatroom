@@ -1,7 +1,6 @@
 self.addEventListener("push", e => {
-    let title = "was geht "+ params.username;
-    let body = "du bist in chat "+params.chatroomId+" und die letzte nachricht war "+params.lastMsg;
+    const data = e.data.json();
     self.registration.showNotification(
-        title, {body: body}
+        data.title, {body: data.body}
     );
 });

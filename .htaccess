@@ -1,13 +1,2 @@
-RewriteEngine on
-
-RewriteBase /chatroom/
-#RewriteCond %{REQUEST_FILENAME} -d
-#RewriteCond %{REQUEST_FILENAME} -f
-#RewriteRule ^([a-zA-Z]+) index.php?controller=$1 [NC,L]
-#RewriteRule ^([a-zA-Z]+)/([a-zA-Z]+) index.php?controller=$1&action=$2 [NC,L]
-RewriteRule ^create/([a-zA-Z]+) index.php?controller=create&action=$1 [NC,L]
-RewriteRule ^create index.php?controller=create [NC,L]
-RewriteRule ^chat/([0-9a-zA-Z]+) index.php?controller=chat&chat=$1 [NC,L]
-RewriteRule ^join/([0-9a-zA-Z]+)/([0-9a-zA-Z]+) index.php?controller=join&roomName=$1&user=$2
 Header set Access-Control-Allow-Origin "*"
 Header set Access-Control-Allow-Methods: "GET,POST,OPTIONS,"

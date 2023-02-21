@@ -2,7 +2,6 @@
 
 class GetConfParamsAjax extends AjaxBaseController
 {
-
     protected function executeSqlQuery()
     {
         $confParams = [

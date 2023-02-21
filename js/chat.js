@@ -13,7 +13,7 @@ let lastId = false;
 setInterval(reloadMessages,intervalTime);
 setInterval(loadActiveUsers,intervalTime);
 
-console.log(navigator.serviceWorker.controller);
+console.log(navigator.serviceWorker);
 
 //loading active users and chat messages, adding eventListeners and checking browser
 $(document).ready(function () {

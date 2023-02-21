@@ -3,6 +3,9 @@ const create = $("#create");
 const join = $("#join");
 const userInput = $("#username");
 const roomInput = $("#room_name");
+const controller = $("#controller");
+
+console.log(navigator.serviceWorker);
 
 //adding eventListener and loading chat-rooms
 $(document).ready(function () {
@@ -33,7 +36,7 @@ function createClick() {
                 },
                 "success":function (response) {
                     if (response === "valid") {
-                        form.attr("action","http://localhost/chatroom/create/createRoom/");
+                        controller.val("Create");
                         form.submit();
                     } else if (response === "empty") {
                         alert("Chatroom name cant be empty");
@@ -67,7 +70,7 @@ function joinClick() {
                         },
                         "success":function (response) {
                             if (response === "valid") {
-                                form.attr("action","http://localhost/chatroom/join/"+roomInput.val()+"/"+userInput.val()+"/");
+                                controller.val("Join");
                                 form.submit();
                             } else if (response === "noRoom") {
                                 alert("Chatroom '"+roomInput.val()+"' not found")
