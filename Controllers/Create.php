@@ -7,7 +7,7 @@ class Create extends BaseController
     /**
      * creates a new chat-room and sets session-user to given user then redirects to created room
      */
-    public function createRoom()
+    public function render()
     {
         $sRoomName = $this->getRequestParameter("room_name");
 

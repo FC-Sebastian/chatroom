@@ -16,7 +16,6 @@ if (isset($_REQUEST['action'])) {
             $controllerObject = new Foyer();
             $controllerObject->setErrorMessage($exc->getMessage());
         }
-
     }
 }
 

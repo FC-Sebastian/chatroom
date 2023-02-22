@@ -1,10 +1,20 @@
-.h-90 {
-    height: 90% !important;
-}
 .rotate-45 {
     transform: rotateY(0deg) rotate(43deg);
 }
 
 #preview:hover {
     opacity: 50%;
+}
+
+.flex-flow-column {
+    display: contents;
+    flex-flow: column;
+}
+
+.fit-content {
+    flex: 0 1 auto;
+}
+
+.remaining-space {
+    flex: 1 1 auto;
 }
