@@ -6,12 +6,13 @@ const { JSDOM } = require('jsdom');
 const { window } = new JSDOM("");
 const $ = require('jquery')(window);
 const cors = require('cors');
+const fs = require('fs');
 const app = express();
 const publicKey = "BP9dpMh9ZzDu76icN_y9poka-vUmxC1WSFrwxHSariK-puJvRrwcsTYNs2AOrZ6SzNPcVzWnPq6vH1Q-yCXdHXc";
 const privateKey = "WWE6g5zfMfrgkb27o44mfugBpnGfxTGGzykZjQLxu-c";
 let confParams;
 let pool;
-let count = 0;
+let emptyRooms = [];
 $.ajax("http://localhost/chatroom/index.php",{
     "type":"POST",
     "async":false,
@@ -43,7 +44,8 @@ app.listen(port, ()=>{
     console.log(`server started on ${port}`);
 });
 
-setInterval(sendPushNotifications,100);
+setInterval(sendPushNotifications,1000);
+setInterval(clearRooms,15000);
 
 async function saveSubscription(sub, username, chatroomId){
     let subUnique = await checkSubscriptionUnique(username,chatroomId);
@@ -83,8 +85,6 @@ function cipher(data,process){
 }
 
 function sendPushNotifications(){
-    console.log(count);
-    count += 1;
     console.log("sending PN");
     let query = "SELECT * FROM chat_subscriptions";
     pool.query(query, async function (err, result){
@@ -126,7 +126,9 @@ function getLastMessageId(chatroomId) {
         let query = "SELECT id FROM chat_messages WHERE chat_room_id = '"+chatroomId+"' AND user <> '' ORDER BY id DESC LIMIT 1";
         pool.query(query,(err, result) => {
             if (err) throw err;
-            resolve(result[0].id);
+            if (result.length > 0) {
+                resolve(result[0].id);
+            }
         });
     });
 }
@@ -147,6 +149,99 @@ function updateLastMessageId(subscriptionId, lastId) {
         pool.query(query,err=>{
             if (err) throw err;
             resolve(true);
+        });
+    });
+}
+
+async function clearRooms()
+{
+    if (emptyRooms.length > 0) {
+        for (let i = 0; i < emptyRooms.length; i++){
+            let roomEmpty = await isRoomEmpty(emptyRooms[i]);
+            if (roomEmpty === true) {
+                let deleted = await deleteRoom(emptyRooms[i]);
+                if (deleted === true) {
+                    console.log("deleted room "+emptyRooms[i]);
+                    emptyRooms.splice(i,1);
+                }
+            }
+        }
+    }
+    emptyRooms = await getEmptyRooms();
+}
+
+function isRoomEmpty(roomId) {
+    return new Promise(resolve => {
+        let query = "SELECT * FROM chat_active WHERE chat_room_id='"+roomId+"' LIMIT 1";
+        pool.query(query,(err, result) => {
+            if (err) throw err;
+            resolve(result.length === 0);
+        });
+    });
+}
+
+function deleteRoom(roomId){
+    return new Promise(async resolve => {
+        let picsDeleted = await deletePics(roomId);
+        if (picsDeleted === true) {
+            deleteSubscription(roomId);
+            deleteMessages(roomId);
+        }
+        let query = `DELETE FROM chat_rooms WHERE id = '${roomId}'`;
+        pool.query(query, (err) => {
+            if (err) throw err
+            resolve(true);
+        });
+    });
+}
+
+function deletePics(roomId){
+    return new Promise(resolve => {
+        let query = `SELECT picture_url FROM chat_messages WHERE chat_room_id = '${roomId}' AND picture_url <> ''`;
+        pool.query(query,(err, result) => {
+            if (err) throw err;
+            for (let i = 0; i < result.length; i++){
+                let url = cipher(result[i].picture_url,"decrypt");
+                let file = url.slice(url.lastIndexOf("/")+1);
+                let path = __dirname+"\\pics\\"+file;
+                fs.unlink(path,(err) =>{
+                    if (err) throw err;
+                    console.log("deleted "+path);
+                });
+            }
+            resolve(true);
+        });
+    });
+}
+
+function deleteMessages(roomId) {
+    let query = `DELETE FROM chat_messages WHERE chat_room_id = '${roomId}'`;
+    pool.query(query,(err) =>{
+        if (err) throw err;
+    });
+}
+
+function deleteSubscription(roomId){
+    let query = `DELETE FROM chat_subscriptions WHERE chat_room_id = '${roomId}'`;
+    pool.query(query,(err) =>{
+        if (err) throw err;
+    });
+}
+
+function getEmptyRooms()
+{
+    return new Promise(resolve => {
+        let query = `SELECT id FROM chat_rooms`;
+        let empty = [];
+        pool.query(query,async (err, result) => {
+            if (err) throw err;
+            for (let i = 0; i < result.length; i++) {
+                let roomEmpty = await isRoomEmpty(result[i].id);
+                if (roomEmpty === true) {
+                    empty.push(result[i].id);
+                }
+            }
+            resolve(empty);
         });
     });
 }

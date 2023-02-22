@@ -12,12 +12,13 @@ class LoadChatMsgsAjax extends AjaxBaseController
     {
         $oChatMsgs = new ChatMessage();
         $sChatroomId = $this->getRequestParameter("id");
-        $lastId = $this->getRequestParameter("lastId");
+        $iLastId = $this->getRequestParameter("lastMessage");
         $sMsgsDivsString = "";
         $blPlaySound = false;
 
-        if ($lastId === false || $lastId !== $oChatMsgs->loadByColumnValue("chat_room_id",$sChatroomId,1,"id DESC")) {
-            $aMsgs = $oChatMsgs->loadByColumnValue("chat_room_id", $sChatroomId,false,"created_at");
+        if ($iLastId === false || $iLastId !== $oChatMsgs->loadByColumnValue("chat_room_id",$sChatroomId,1,"id DESC")[0]["id"]) {
+            $sWhere = "(chat_room_id = '".$sChatroomId."') AND (id > '".$iLastId."')";
+            $aMsgs = $oChatMsgs->loadList($sWhere);
             if ($aMsgs !== false) {
                 foreach ($aMsgs as $aChatMsg) {
                     if ($aChatMsg["user"] === "") {
@@ -45,10 +46,10 @@ class LoadChatMsgsAjax extends AjaxBaseController
                 if (end($aMsgs)["user"] !== $_SESSION["user"] && end($aMsgs)["user"] !== "") {
                     $blPlaySound = true;
                 }
-                $lastId = end($aMsgs)["id"];
+                $iLastId = end($aMsgs)["id"];
             }
         }
-        $aEchoArray = ["text" => $sMsgsDivsString, "notification" => $blPlaySound, "lastId" => $lastId];
+        $aEchoArray = ["text" => $sMsgsDivsString, "notification" => $blPlaySound, "lastId" => $iLastId];
         echo json_encode($aEchoArray);
     }
 }

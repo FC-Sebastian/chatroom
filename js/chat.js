@@ -9,7 +9,7 @@ const roomId = $("#chatHidden").val().slice($("#chatHidden").val().indexOf("|")+
 const fileInput = $("#picUpload");
 const previewImg = $("#preview");
 const pushButton = $("#push");
-let lastId = false;
+let lastId = $("#lastMessage").val();
 setInterval(reloadMessages,intervalTime);
 setInterval(loadActiveUsers,intervalTime);
 
@@ -128,7 +128,8 @@ function reloadMessages() {
             let responseJson = JSON.parse(response);
             if (responseJson.lastId !== lastId) {
                 lastId = responseJson.lastId;
-                chatDiv.html(responseJson.text);
+                let newMessages = $(responseJson.text);
+                chatDiv.append(newMessages);
                 if (responseJson.notification === true) {
                     playNotification();
                 }
@@ -137,7 +138,8 @@ function reloadMessages() {
         },
         "data":{
             "controller":"LoadChatMsgsAjax",
-            "id":roomId
+            "id":roomId,
+            "lastMessage":lastId
         }
     };
     $.ajax(domain+"index.php", params);
@@ -151,13 +153,15 @@ function loadMessages() {
         "type":"POST",
         "success": function (response) {
             let responseJson = JSON.parse(response);
-            chatDiv.html(responseJson.text);
+            let newMessages = $(responseJson.text);
+            chatDiv.append(newMessages);
             lastId = responseJson.lastId;
             scrollToChatBottom();
         },
         "data":{
             "controller":"LoadChatMsgsAjax",
-            "id":roomId
+            "id":roomId,
+            "lastMessage":lastId
         }
     };
     $.ajax(domain+"index.php", params);

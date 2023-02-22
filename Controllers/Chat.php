@@ -32,6 +32,18 @@ class Chat extends BaseController
             $oChatMsg->save();
         }
 
+        if (!isset($_SESSION["chat".$this->aChatRoom["id"]])) {
+            $_SESSION["chat".$this->aChatRoom["id"]] = $this->getLastMessageId($this->aChatRoom["id"]);
+        }
+
         parent::render();
+    }
+
+    public function getLastMessageId($chatroomId)
+    {
+        $oChatMessages = new ChatMessage();
+        $sWhere = "(chat_room_id = '".$chatroomId."') AND (user <> '')";
+        $aMessage = $oChatMessages->loadList($sWhere,1,"id DESC");
+        return $aMessage[0]["id"] ?? 0;
     }
 }
