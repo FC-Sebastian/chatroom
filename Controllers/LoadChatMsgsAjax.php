@@ -16,33 +16,19 @@ class LoadChatMsgsAjax extends AjaxBaseController
         $sMsgsDivsString = "";
         $blPlaySound = false;
 
-        if ($iLastId === false || $iLastId !== $oChatMsgs->loadByColumnValue("chat_room_id",$sChatroomId,1,"id DESC")[0]["id"]) {
+        if ($iLastId === false || $iLastId !== $oChatMsgs->loadList("chat_room_id = '{$sChatroomId}'",1,"id DESC")[0]["id"]) {
             $sWhere = "(chat_room_id = '".$sChatroomId."') AND (id > '".$iLastId."')";
             $aMsgs = $oChatMsgs->loadList($sWhere);
+
             if ($aMsgs !== false) {
                 foreach ($aMsgs as $aChatMsg) {
                     if ($aChatMsg["user"] === "") {
                         $sMsgsDivsString .= "<div class='text-center'><span>".$aChatMsg["msg_text"]."</span></div>";
                     } else {
-                        $text = $this->decrypt($aChatMsg["msg_text"], Conf::getParam("key"));
-                        $sMsgsDivsString .=
-                        '<div class="col-12">
-                            <div class="row '.( $_SESSION["user"] === $aChatMsg["user"] ? 'justify-content-end' : '' ).' g-0">
-                                <div class="col-sm-8 mb-2 g-2">
-                                    <div class="card shadow ">
-                                        <div class="card-body">
-                                            <h6 class="card-title">'.$aChatMsg["user"].':</h6>';
-                        if ($aChatMsg["picture_url"] !== null && $aChatMsg["picture_url"] !== "") {
-                            $sMsgsDivsString .= '<img class="img-fluid lightbox rounded w-100" src="'.$this->decrypt($aChatMsg["picture_url"], Conf::getParam("key")).'">';
-                        }
-                        $sMsgsDivsString .= '<span class="card-text">'.$text.'</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>';
+                        $sMsgsDivsString .= $this->buildMessageString($aChatMsg);
                     }
                 }
+
                 if (end($aMsgs)["user"] !== $_SESSION["user"] && end($aMsgs)["user"] !== "") {
                     $blPlaySound = true;
                 }
@@ -51,5 +37,31 @@ class LoadChatMsgsAjax extends AjaxBaseController
         }
         $aEchoArray = ["text" => $sMsgsDivsString, "notification" => $blPlaySound, "lastId" => $iLastId];
         echo json_encode($aEchoArray);
+    }
+
+    /**
+     * builds message string from message array and returns it
+     * @param $aChatMsg
+     * @return string
+     */
+    protected function buildMessageString($aChatMsg)
+    {
+        $text = $this->decrypt($aChatMsg["msg_text"], Conf::getParam("key"));
+        $sMessage ='<div class="col-12">
+                            <div class="row '.( $_SESSION["user"] === $aChatMsg["user"] ? 'justify-content-end' : '' ).' g-0">
+                                <div class="col-sm-8 mb-2 g-2">
+                                    <div class="card shadow ">
+                                        <div class="card-body">
+                                            <h6 class="card-title">'.$aChatMsg["user"].':</h6>';
+        if ($aChatMsg["picture_url"] !== null && $aChatMsg["picture_url"] !== "") {
+            $sMessage .= '<img class="img-fluid lightbox rounded w-100" src="'.$this->decrypt($aChatMsg["picture_url"], Conf::getParam("key")).'">';
+        }
+        $sMessage .= '<span class="card-text">'.$text.'</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>';
+        return $sMessage;
     }
 }

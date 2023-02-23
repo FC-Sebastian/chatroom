@@ -8,5 +8,6 @@ $configarray = [
     "dbuser" => "YOUR VALUE HERE",
     "dbpass" => "YOUR VALUE HERE",
     "database" => "YOUR VALUE HERE",
-    "node" => "YOUR VALUE HERE"
+    "node" => "YOUR VALUE HERE",
+    "pushPublicKey" => "YOUR VALUE HERE"
 ];

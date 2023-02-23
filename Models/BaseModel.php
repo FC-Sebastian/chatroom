@@ -59,30 +59,6 @@ class BaseModel
         }
     }
 
-    public function loadByColumnValue($sColumn, $sValue, $iLimit = false, $sOrderColumn = false) {
-        $sQuery = "SELECT * FROM ".$this->getTableName()." WHERE ".$sColumn."='".$sValue."'";
-        if ($sOrderColumn !== false) {
-            $sQuery .= " ORDER BY ".$sOrderColumn;
-        }
-        if ($iLimit !== false) {
-            $sQuery .= " LIMIT ".$iLimit;
-        }
-        $result = DbConnection::executeMySQLQuery($sQuery);
-        if (mysqli_num_rows($result) == 0) {
-            return false;
-        }
-        $aReturnArray = [];
-        while ($aRow = mysqli_fetch_assoc($result)) {
-            $oModel = new $this;
-            foreach ($aRow as $key => $value) {
-                $setString = "set" . $key;
-                $oModel->$setString($value);
-            }
-            $aReturnArray[] = $oModel->data;
-        }
-        return $aReturnArray;
-    }
-
     public function loadList($sWhere = false, $iLimit = false, $sOrderColumn = false) {
         $sQuery = "SELECT * FROM ".$this->getTableName();
         if ($sWhere !== false) {

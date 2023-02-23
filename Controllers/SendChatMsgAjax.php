@@ -22,18 +22,22 @@ class SendChatMsgAjax extends AjaxBaseController
         $oChatMsg->save();
     }
 
+    /**
+     * uploads send image and returns encrypted url
+     * @return string
+     */
     protected function getFileUrlFromUpload()
     {
-        $tmppath = $_FILES["upload"]["tmp_name"];
-        $originalName = $_FILES["upload"]["name"];
-        $extension = substr($originalName,strrpos($originalName, "."));
-        $name = $this->getRequestParameter("roomId").$this->getRequestParameter("user").date("Y_m_d-H_i_s",time()).$extension;
-        $type = $_FILES["upload"]["type"];
-        $locationbegin = __DIR__ . '\..\pics\\';
-        $location = $locationbegin . $name;
-        if (substr($type, 0, 6) === "image/") {
-            move_uploaded_file($tmppath, $location);
-            return $this->encrypt($this->getUrl('pics/'.$name), Conf::getParam("key"));
+        $sTmppath = $_FILES["upload"]["tmp_name"];
+        $sOriginalName = $_FILES["upload"]["name"];
+        $sExtension = substr($sOriginalName,strrpos($sOriginalName, "."));
+        $sName = $this->getRequestParameter("roomId").$this->getRequestParameter("user").date("Y_m_d-H_i_s",time()).$sExtension;
+        $sType = $_FILES["upload"]["type"];
+        $sLocationbegin = __DIR__ . '\..\pics\\';
+        $sLocation = $sLocationbegin . $sName;
+        if (substr($sType, 0, 6) === "image/") {
+            move_uploaded_file($sTmppath, $sLocation);
+            return $this->encrypt($this->getUrl('pics/'.$sName), Conf::getParam("key"));
         }
         return "";
     }

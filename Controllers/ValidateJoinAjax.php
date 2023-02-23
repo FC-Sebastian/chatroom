@@ -16,7 +16,8 @@ class ValidateJoinAjax extends AjaxBaseController
         $oChatRoom = new ChatRoom();
         $oActive = new ChatActive();
 
-        $aRoomData = $oChatRoom->loadByColumnValue("room_name",$sRoomName,1);
+        $sWhere = "room_name = {$sRoomName}";
+        $aRoomData = $oChatRoom->loadList($sWhere,1);
         if ($aRoomData !== false) {
             $sWhere = "(chat_room_id = '".$aRoomData[0]["id"]."') AND (user = '".$sUser."')";
             if ($oActive->loadList($sWhere,1) === false) {
@@ -27,7 +28,5 @@ class ValidateJoinAjax extends AjaxBaseController
         } else {
             echo "noRoom";
         }
-
-
     }
 }

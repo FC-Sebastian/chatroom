@@ -2,9 +2,13 @@
 
 class GetConfParamsAjax extends AjaxBaseController
 {
+    /**
+     * echoes json encoded config array
+     * @return void
+     */
     protected function executeSqlQuery()
     {
-        $confParams = [
+        $aConfParams = [
             "url" => Conf::getParam("url"),
             "key" => Conf::getParam("key"),
             "host" => Conf::getParam("dbhost"),
@@ -12,6 +16,6 @@ class GetConfParamsAjax extends AjaxBaseController
             "pass" => Conf::getParam("dbpass"),
             "db" => Conf::getParam("db")
             ];
-        echo json_encode($confParams);
+        echo json_encode($aConfParams);
     }
 }

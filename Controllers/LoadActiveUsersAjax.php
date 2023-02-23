@@ -12,7 +12,8 @@ class LoadActiveUsersAjax extends AjaxBaseController
         $sChatroomId = $this->getRequestParameter("id");
 
         $oActive = new ChatActive();
-        $aActiveUsers = $oActive->loadByColumnValue("chat_room_id",$sChatroomId);
+        $sWhere = "chat_room_id = '{$sChatroomId}'";
+        $aActiveUsers = $oActive->loadList($sWhere);
 
         $sReturnString = "";
         if ($aActiveUsers !== false) {
