@@ -10,10 +10,12 @@ const fileInput = $("#picUpload");
 const previewImg = $("#preview");
 const pushButton = $("#push");
 let lastId = $("#lastMessage").val();
+const lightboxPic = $("#lightBoxPic");
+let imageUrls = [];
 setInterval(reloadMessages,intervalTime);
 setInterval(loadActiveUsers,intervalTime);
 
-console.log(navigator.serviceWorker);
+//console.log(navigator.serviceWorker);
 
 //loading active users and chat messages, adding eventListeners and checking browser
 $(document).ready(function () {
@@ -25,25 +27,25 @@ $(document).ready(function () {
     fileInput.on("change",function () {
         showPreview();
     });
-    previewImg.click(function (){
+    previewImg.click(function () {
         previewImg.attr("src","");
         fileInput.val("");
     });
     if (navigator.userAgent.match(/firefox|fxios/i)) {
-        $(window).bind("beforeunload", function () {
+        $(window).on("beforeunload", function () {
             setUserInactive(false);
         });
     } else {
-        $(window).bind("beforeunload", function () {
+        $(window).on("beforeunload", function () {
             setUserInactive(true);
         });
     }
-    chatInput.bind("keydown",function (evt) {
+    chatInput.on("keydown",function (evt) {
         if (evt.key === "Enter") {
             sendMsg();
         }
     });
-    pushButton.click(function (){
+    pushButton.click(function () {
         if('serviceWorker' in navigator){
             Notification.requestPermission()
                 .then(function () {
@@ -53,10 +55,15 @@ $(document).ready(function () {
             });
         }
     });
-
+    $("#next").click(function (){
+        nextLightbox()
+    });
+    $("#prev").click(function (){
+        prevLightbox()
+    });
 });
 
-async function pushSubscribe(){
+async function pushSubscribe() {
     const register = await navigator.serviceWorker.register(domain + 'sw.js', {
         scope: domain
     });
@@ -134,6 +141,7 @@ function reloadMessages() {
                     playNotification();
                 }
                 scrollToChatBottom();
+                updateLightbox();
             }
         },
         "data":{
@@ -157,6 +165,7 @@ function loadMessages() {
             chatDiv.append(newMessages);
             lastId = responseJson.lastId;
             scrollToChatBottom();
+            updateLightbox();
         },
         "data":{
             "controller":"LoadChatMsgsAjax",
@@ -213,10 +222,59 @@ function scrollToChatBottom() {
     },50)
 }
 
-function showPreview()
-{
+function showPreview() {
     if (fileInput[0].files[0].type.slice(0,6) === "image/") {
         let url = window.URL.createObjectURL(fileInput[0].files[0]);
         previewImg.attr("src", url);
     }
+}
+
+function updateLightbox() {
+    imageUrls = [];
+    let images = $(".lightbox");
+    images.each(function (index) {
+        let image = $(images[index]);
+        image.off("click");
+        image.click(function (){
+            imageClick(image);
+        });
+        imageUrls.push(image.attr("src"));
+    });
+    updateLBIndex();
+}
+
+function imageClick(image) {
+    $("#modalFooter").html("");
+    lightboxPic.attr("src",image.attr("src"));
+    let modal = new bootstrap.Modal("#modal");
+    modal.show();
+    updateLBIndex();
+}
+
+function nextLightbox() {
+    let index = imageUrls.indexOf(lightboxPic.attr("src"));
+    if (index === imageUrls.length - 1) {
+        index = 0;
+    } else {
+        index += 1;
+    }
+    lightboxPic.attr("src",imageUrls[index]);
+    updateLBIndex();
+}
+
+function prevLightbox() {
+    let index = imageUrls.indexOf(lightboxPic.attr("src"));
+    if (index === 0) {
+        index = imageUrls.length - 1;
+    } else {
+        index -= 1;
+    }
+    lightboxPic.attr("src",imageUrls[index]);
+    updateLBIndex();
+}
+
+function updateLBIndex() {
+    let index = imageUrls.indexOf(lightboxPic.attr("src")) + 1;
+    let max = imageUrls.length;
+    $("#lightboxIndex").html(`${index}/${max}`);
 }

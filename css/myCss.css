@@ -18,3 +18,21 @@
 .remaining-space {
     flex: 1 1 auto;
 }
+
+#next, #prev {
+    height: 100%;
+    width: 5%;
+    filter: invert(90%);
+}
+
+#next:hover {
+    background-color: white;
+    border-top-right-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+}
+
+#prev:hover {
+    background-color: white;
+    border-top-left-radius: 0.375rem;
+    border-bottom-left-radius: 0.375rem;
+}
