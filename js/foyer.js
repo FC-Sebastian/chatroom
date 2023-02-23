@@ -5,8 +5,6 @@ const userInput = $("#username");
 const roomInput = $("#room_name");
 const controller = $("#controller");
 
-console.log(navigator.serviceWorker);
-
 //adding eventListener and loading chat-rooms
 $(document).ready(function () {
    create.click(function (e){

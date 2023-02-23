@@ -14,7 +14,7 @@ class ValidateCreateAjax extends AjaxBaseController
     {
         $sRoomName = $this->getRequestParameter("roomName");
         $oChatroom = new ChatRoom();
-        $sWhere = "(room_name = '".$sRoomName."')";
+        $sWhere = "(room_name = '{$sRoomName}')";
 
         if ($sRoomName === false || $sRoomName === "") {
             echo "empty";

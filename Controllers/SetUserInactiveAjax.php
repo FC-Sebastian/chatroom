@@ -10,14 +10,14 @@ class SetUserInactiveAjax extends AjaxBaseController
     {
         $sUser = $this->getRequestParameter("user");
         $sRoomId = $this->getRequestParameter("roomId");
-        $sWhere = " (chat_room_id = '".$sRoomId."') AND (user = '".$sUser."')";
+        $sWhere = " (chat_room_id = '{$sRoomId}') AND (user = '{$sUser}')";
 
         $oActive = new ChatActive();
         $oChatMsg = new ChatMessage();
         if ($oActive->loadList($sWhere,1) !== false) {
             $sActiveId = $oActive->loadList($sWhere,1)[0]["id"];
             $oActive->delete($sActiveId);
-            if ($oActive->loadList("(chat_room_id = '".$sRoomId."')",1) !== false) {
+            if ($oActive->loadList("(chat_room_id = '{$sRoomId}')",1) !== false) {
                 $this->sendUserLeftNotification($oChatMsg, $sRoomId, $sUser);
             } else {
                 $oChatMsg->deleteJoinNotificationsByRoomId($sRoomId);
