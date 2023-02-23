@@ -3,6 +3,21 @@
  * @var $controller Chat
  */
 ?>
+<div id="modal" class="modal fade">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div id="modalBody" class="modal-body text-center text-white p-0 m-0">
+                <p id="lightboxIndex" class="position-absolute top-0 start-50 bg-secondary rounded px-1 translate-middle-x "></p>
+                <img id="prev" class="position-absolute top-50 start-0 translate-middle-y" src="<?= $controller->getUrl("icons/prev.svg") ?>">
+                <img id="lightBoxPic" class="img-fluid rounded w-100 d-inline" src="">
+                <img id="next" class="position-absolute top-50 end-0 translate-middle-y" src="<?= $controller->getUrl("icons/next.svg") ?>">
+            </div>
+        </div>
+        <div id="modalFooter" class="modal-footer">
+
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-4 vh-100 d-flex flex-flow-column pt-2">
         <div class="row fit-content g-2 mb-2">
@@ -20,7 +35,7 @@
         <div class="fit-content">
             <div class="col mt-2">
                 <div id="previewDiv" class="position-relative text-center">
-                    <img id="preview" class="position-absolute bottom-100 start-0 w-75 rounded" src="">
+                    <img id="preview" class="position-absolute img-fluid bottom-100 start-0 w-75 rounded" src="">
                 </div>
                 <div class="input-group">
                     <textarea id="chatInput" class="form-control" name="chatText"></textarea>

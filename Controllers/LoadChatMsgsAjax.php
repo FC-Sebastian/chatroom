@@ -33,7 +33,7 @@ class LoadChatMsgsAjax extends AjaxBaseController
                                         <div class="card-body">
                                             <h6 class="card-title">'.$aChatMsg["user"].':</h6>';
                         if ($aChatMsg["picture_url"] !== null && $aChatMsg["picture_url"] !== "") {
-                            $sMsgsDivsString .= '<img class="img-fluid" src="'.$this->decrypt($aChatMsg["picture_url"], Conf::getParam("key")).'">';
+                            $sMsgsDivsString .= '<img class="img-fluid lightbox rounded w-100" src="'.$this->decrypt($aChatMsg["picture_url"], Conf::getParam("key")).'">';
                         }
                         $sMsgsDivsString .= '<span class="card-text">'.$text.'</span>
                                         </div>
