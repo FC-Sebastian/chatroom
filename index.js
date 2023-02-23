@@ -47,19 +47,32 @@ app.listen(port, ()=>{
 setInterval(sendPushNotifications,1000);
 setInterval(clearRooms,15000);
 
+/**
+ * saves subscription to db
+ * @param sub
+ * @param username
+ * @param chatroomId
+ * @returns {Promise<void>}
+ */
 async function saveSubscription(sub, username, chatroomId){
     let subUnique = await checkSubscriptionUnique(username,chatroomId);
     if (subUnique === true) {
-        let query = "INSERT INTO chat_subscriptions (chat_room_id,user,subscription) VALUES ('"+chatroomId+"','"+username+"','"+cipher(JSON.stringify(sub),"encrypt")+"')";
+        let query = `INSERT INTO chat_subscriptions (chat_room_id,user,subscription) VALUES ('${chatroomId}','${username}','${cipher(JSON.stringify(sub),"encrypt")}')`;
         pool.query(query,function (err){
             if (err) throw err;
         });
     }
 }
 
+/**
+ * checks whether a subscription is unique
+ * @param username
+ * @param chatroomId
+ * @returns {Promise<unknown>}
+ */
 function checkSubscriptionUnique(username, chatroomId) {
     return new Promise(resolve => {
-        let query = "SELECT * FROM chat_subscriptions WHERE user='"+username+"' AND chat_room_id='"+chatroomId+"' LIMIT 1";
+        let query = `SELECT * FROM chat_subscriptions WHERE user='${username}' AND chat_room_id='${chatroomId}' LIMIT 1`;
         pool.query(query,(err, result) => {
             if (err) throw err;
             resolve(result.length === 0);
@@ -67,6 +80,12 @@ function checkSubscriptionUnique(username, chatroomId) {
     });
 }
 
+/**
+ * ciphers given data process can be "decrypt" or "encrypt"
+ * @param data
+ * @param process
+ * @returns {string}
+ */
 function cipher(data,process){
     let ciphered = "";
     $.ajax(confParams.url+"index.php",{
@@ -84,6 +103,9 @@ function cipher(data,process){
     return ciphered;
 }
 
+/**
+ * sends push notifications
+ */
 function sendPushNotifications(){
     console.log("sending PN");
     let query = "SELECT * FROM chat_subscriptions";
@@ -104,6 +126,11 @@ function sendPushNotifications(){
     });
 }
 
+/**
+ * checks whether a push notification is necessary
+ * @param subscriptionData
+ * @returns {Promise<unknown>}
+ */
 function isPushNecessary(subscriptionData){
     return new Promise(async resolve=> {
         let userInactive = await isUserInactive(subscriptionData.user,subscriptionData.chat_room_id);
@@ -121,9 +148,14 @@ function isPushNecessary(subscriptionData){
     });
 }
 
+/**
+ * gets id of last message from given room
+ * @param chatroomId
+ * @returns {Promise<unknown>}
+ */
 function getLastMessageId(chatroomId) {
     return new Promise(resolve => {
-        let query = "SELECT id FROM chat_messages WHERE chat_room_id = '"+chatroomId+"' AND user <> '' ORDER BY id DESC LIMIT 1";
+        let query = `SELECT id FROM chat_messages WHERE chat_room_id = '${chatroomId}' AND user <> '' ORDER BY id DESC LIMIT 1`;
         pool.query(query,(err, result) => {
             if (err) throw err;
             if (result.length > 0) {
@@ -133,9 +165,15 @@ function getLastMessageId(chatroomId) {
     });
 }
 
+/**
+ * checks whether user is active
+ * @param user
+ * @param chatroomId
+ * @returns {Promise<unknown>}
+ */
 function isUserInactive(user, chatroomId) {
     return new Promise(resolve => {
-        let query = "SELECT * FROM chat_active WHERE user='"+user+"' AND chat_room_id='"+chatroomId+"' LIMIT 1";
+        let query = `SELECT * FROM chat_active WHERE user='${user}' AND chat_room_id='${chatroomId}' LIMIT 1`;
         pool.query(query,(err, result) => {
             if (err) throw err;
             resolve(result.length === 0);
@@ -143,9 +181,15 @@ function isUserInactive(user, chatroomId) {
     });
 }
 
+/**
+ * updates last message id of given subscription
+ * @param subscriptionId
+ * @param lastId
+ * @returns {Promise<unknown>}
+ */
 function updateLastMessageId(subscriptionId, lastId) {
     return new Promise(resolve => {
-        let query = "UPDATE chat_subscriptions SET last_message_id = '"+lastId+"' WHERE id='"+subscriptionId+"'";
+        let query = `UPDATE chat_subscriptions SET last_message_id = '${lastId}' WHERE id='${subscriptionId}'`;
         pool.query(query,err=>{
             if (err) throw err;
             resolve(true);
@@ -153,6 +197,10 @@ function updateLastMessageId(subscriptionId, lastId) {
     });
 }
 
+/**
+ * clears empty rooms then stores empty rooms in emptyRooms array
+ * @returns {Promise<void>}
+ */
 async function clearRooms()
 {
     if (emptyRooms.length > 0) {
@@ -170,9 +218,14 @@ async function clearRooms()
     emptyRooms = await getEmptyRooms();
 }
 
+/**
+ * checks whether room is empty
+ * @param roomId
+ * @returns {Promise<unknown>}
+ */
 function isRoomEmpty(roomId) {
     return new Promise(resolve => {
-        let query = "SELECT * FROM chat_active WHERE chat_room_id='"+roomId+"' LIMIT 1";
+        let query = `SELECT * FROM chat_active WHERE chat_room_id='${roomId}' LIMIT 1`;
         pool.query(query,(err, result) => {
             if (err) throw err;
             resolve(result.length === 0);
@@ -180,6 +233,11 @@ function isRoomEmpty(roomId) {
     });
 }
 
+/**
+ * deletes room with given id
+ * @param roomId
+ * @returns {Promise<unknown>}
+ */
 function deleteRoom(roomId){
     return new Promise(async resolve => {
         let picsDeleted = await deletePics(roomId);
@@ -195,6 +253,11 @@ function deleteRoom(roomId){
     });
 }
 
+/**
+ * deletes images of given chatroom
+ * @param roomId
+ * @returns {Promise<unknown>}
+ */
 function deletePics(roomId){
     return new Promise(resolve => {
         let query = `SELECT picture_url FROM chat_messages WHERE chat_room_id = '${roomId}' AND picture_url <> ''`;
@@ -214,6 +277,10 @@ function deletePics(roomId){
     });
 }
 
+/**
+ * deletes messages of given chatroom
+ * @param roomId
+ */
 function deleteMessages(roomId) {
     let query = `DELETE FROM chat_messages WHERE chat_room_id = '${roomId}'`;
     pool.query(query,(err) =>{
@@ -221,6 +288,10 @@ function deleteMessages(roomId) {
     });
 }
 
+/**
+ * deletes subscriptions of given chatroom
+ * @param roomId
+ */
 function deleteSubscription(roomId){
     let query = `DELETE FROM chat_subscriptions WHERE chat_room_id = '${roomId}'`;
     pool.query(query,(err) =>{
@@ -228,6 +299,10 @@ function deleteSubscription(roomId){
     });
 }
 
+/**
+ * returns ids of empty chat rooms
+ * @returns {Promise<unknown>}
+ */
 function getEmptyRooms()
 {
     return new Promise(resolve => {
