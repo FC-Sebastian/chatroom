@@ -15,6 +15,7 @@
         <script>
             const domain = "<?= $controller->getUrl() ?>";
             const nodeDomain = "<?= Conf::getParam("node") ?>";
+            const publicKey = "<?= Conf::getParam("pushPublicKey") ?>";
             const intervalTime = 1000;
         </script>
     </head>

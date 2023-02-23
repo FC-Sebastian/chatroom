@@ -19,7 +19,8 @@ class Chat extends BaseController
         $oActive = new ChatActive();
         $oChatMsg = new ChatMessage();
 
-        $this->aChatRoom = $oChatroom->loadByColumnValue("room_name", $sChatroomName,1)[0];
+        $sWhere = "room_name = '{$sChatroomName}'";
+        $this->aChatRoom = $oChatroom->loadList($sWhere,1)[0];
         $this->title = $this->aChatRoom["room_name"];
 
         if (isset($_SESSION["user"]) && $oActive->loadList("(chat_room_id = '".$this->aChatRoom["id"]."') AND (user = '".$_SESSION["user"]."')") === false) {
@@ -39,6 +40,11 @@ class Chat extends BaseController
         parent::render();
     }
 
+    /**
+     * loads the id of the last message of given chatroom and returns it
+     * @param $chatroomId
+     * @return int|mixed
+     */
     public function getLastMessageId($chatroomId)
     {
         $oChatMessages = new ChatMessage();

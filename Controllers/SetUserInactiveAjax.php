@@ -25,6 +25,13 @@ class SetUserInactiveAjax extends AjaxBaseController
         }
     }
 
+    /**
+     * sends "user left chat" message
+     * @param $oChatMsg
+     * @param $sRoomId
+     * @param $sUser
+     * @return void
+     */
     protected function sendUserLeftNotification ($oChatMsg, $sRoomId, $sUser)
     {
         $oChatMsg->setChat_room_id($sRoomId);

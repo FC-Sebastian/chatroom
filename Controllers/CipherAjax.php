@@ -5,14 +5,18 @@ class CipherAjax extends AjaxBaseController
     use Encryption;
     use Decryption;
 
+    /**
+     * uses the process to determine whether to decrypt or encrypt data then echoes the result
+     * @return void
+     */
     protected function executeSqlQuery()
     {
-        $data = $this->getRequestParameter("data");
-        $process = $this->getRequestParameter("process");
-        if ($process === "encrypt"){
-            echo $this->encrypt($data, Conf::getParam("key"));
-        } elseif ($process === "decrypt") {
-            echo $this->decrypt($data,Conf::getParam("key"));
+        $sData = $this->getRequestParameter("data");
+        $sProcess = $this->getRequestParameter("process");
+        if ($sProcess === "encrypt"){
+            echo $this->encrypt($sData, Conf::getParam("key"));
+        } elseif ($sProcess === "decrypt") {
+            echo $this->decrypt($sData,Conf::getParam("key"));
         }
     }
 }

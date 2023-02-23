@@ -1,4 +1,3 @@
-const publicKey = "BP9dpMh9ZzDu76icN_y9poka-vUmxC1WSFrwxHSariK-puJvRrwcsTYNs2AOrZ6SzNPcVzWnPq6vH1Q-yCXdHXc";
 const send = $("#send");
 const chatDiv = $("#chatDiv");
 const chatInput = $("#chatInput");
@@ -14,8 +13,6 @@ const lightboxPic = $("#lightBoxPic");
 let imageUrls = [];
 setInterval(reloadMessages,intervalTime);
 setInterval(loadActiveUsers,intervalTime);
-
-//console.log(navigator.serviceWorker);
 
 //loading active users and chat messages, adding eventListeners and checking browser
 $(document).ready(function () {
@@ -63,6 +60,10 @@ $(document).ready(function () {
     });
 });
 
+/**
+ * creates push subscription and sends it to node server
+ * @returns {Promise<void>}
+ */
 async function pushSubscribe() {
     const register = await navigator.serviceWorker.register(domain + 'sw.js', {
         scope: domain
@@ -82,6 +83,11 @@ async function pushSubscribe() {
     });
 }
 
+/**
+ * builds Uint8 array from given base64 string
+ * @param base64String
+ * @returns {Uint8Array}
+ */
 function urlBase64ToUint8Array(base64String) {
     const padding = "=".repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
@@ -209,6 +215,9 @@ function setUserInactive(async) {
     $.ajax(domain+"index.php",params);
 }
 
+/**
+ * plays notification sound if permitted
+ */
 function playNotification() {
     if (notificationSelect.val() === "notification sound active" || (notificationSelect.val() === "notification sound when in background" && document.visibilityState === "hidden")) {
         let notification = new Audio(domain+"sounds/notification.mp3");
@@ -216,12 +225,18 @@ function playNotification() {
     }
 }
 
+/**
+ * scrolls chat to bottom
+ */
 function scrollToChatBottom() {
     setTimeout(function (){
         chatDiv.scrollTop(chatDiv[0].scrollHeight);
     },50)
 }
 
+/**
+ * displays preview of uploaded image
+ */
 function showPreview() {
     if (fileInput[0].files[0].type.slice(0,6) === "image/") {
         let url = window.URL.createObjectURL(fileInput[0].files[0]);
@@ -229,6 +244,11 @@ function showPreview() {
     }
 }
 
+/**
+ * loads urls of chat images into imageUrls array
+ * adds eventListeners to chat images
+ * updates light box index
+ */
 function updateLightbox() {
     imageUrls = [];
     let images = $(".lightbox");
@@ -243,14 +263,22 @@ function updateLightbox() {
     updateLBIndex();
 }
 
+/**
+ * loads clicked image into modal and displays it
+ * updates light box index
+ * @param image
+ */
 function imageClick(image) {
-    $("#modalFooter").html("");
     lightboxPic.attr("src",image.attr("src"));
     let modal = new bootstrap.Modal("#modal");
     modal.show();
     updateLBIndex();
 }
 
+/**
+ * displays next chat image in light box
+ * updates light box index
+ */
 function nextLightbox() {
     let index = imageUrls.indexOf(lightboxPic.attr("src"));
     if (index === imageUrls.length - 1) {
@@ -262,6 +290,10 @@ function nextLightbox() {
     updateLBIndex();
 }
 
+/**
+ * displays previous image in light box
+ * updates light box index
+ */
 function prevLightbox() {
     let index = imageUrls.indexOf(lightboxPic.attr("src"));
     if (index === 0) {
@@ -273,6 +305,9 @@ function prevLightbox() {
     updateLBIndex();
 }
 
+/**
+ * updates light box index
+ */
 function updateLBIndex() {
     let index = imageUrls.indexOf(lightboxPic.attr("src")) + 1;
     let max = imageUrls.length;
