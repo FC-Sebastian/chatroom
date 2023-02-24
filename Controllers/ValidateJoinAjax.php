@@ -10,8 +10,8 @@ class ValidateJoinAjax extends AjaxBaseController
      */
     protected function executeSqlQuery()
     {
-        $sRoomName = $this->getRequestParameter("roomName");
-        $sUser = $this->getRequestParameter("user");
+        $sRoomName = htmlspecialchars($this->getRequestParameter("roomName"));
+        $sUser = htmlspecialchars($this->getRequestParameter("user"));
 
         $oChatRoom = new ChatRoom();
         $oActive = new ChatActive();

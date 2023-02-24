@@ -12,7 +12,7 @@ class ValidateCreateAjax extends AjaxBaseController
      */
     protected function executeSqlQuery()
     {
-        $sRoomName = $this->getRequestParameter("roomName");
+        $sRoomName = htmlspecialchars($this->getRequestParameter("roomName"));
         $oChatroom = new ChatRoom();
         $sWhere = "(room_name = '{$sRoomName}')";
 

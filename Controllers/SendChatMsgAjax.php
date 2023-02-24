@@ -17,7 +17,6 @@ class SendChatMsgAjax extends AjaxBaseController
         $text = htmlentities($this->getRequestParameter("text"));
         $aData["msg_text"] = $this->encrypt($text, Conf::getParam("key"));
         $aData["picture_url"] = $this->getFileUrlFromUpload();
-        $aData["created_at"] = date("Y.m.d H:i:s",time());
         $oChatMsg->data = $aData;
         $oChatMsg->save();
     }

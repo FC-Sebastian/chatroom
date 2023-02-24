@@ -13,7 +13,8 @@ const privateKey = "WWE6g5zfMfrgkb27o44mfugBpnGfxTGGzykZjQLxu-c";
 let confParams;
 let pool;
 let emptyRooms = [];
-$.ajax("http://localhost/chatroom/index.php",{
+let inactiveUsers = [];
+$.ajax("http://192.168.2.186/chatroom/index.php",{
     "type":"POST",
     "async":false,
     "data":{"controller":"GetConfParamsAjax"},
@@ -44,7 +45,8 @@ app.listen(port, ()=>{
     console.log(`server started on ${port}`);
 });
 
-setInterval(sendPushNotifications,1000);
+//setInterval(sendPushNotifications,1000);
+setInterval(setUserInactive,1000);
 setInterval(clearRooms,15000);
 
 /**
@@ -133,7 +135,7 @@ function sendPushNotifications(){
  */
 function isPushNecessary(subscriptionData){
     return new Promise(async resolve=> {
-        let userInactive = await isUserInactive(subscriptionData.user,subscriptionData.chat_room_id);
+        let userInactive = await isUserInactive(subscriptionData.user,subscriptionData.chat_room_id,"chat_active");
         if (userInactive === true) {
             console.log("user inactive");
             let lastMessageId = await getLastMessageId(subscriptionData.chat_room_id);
@@ -169,11 +171,12 @@ function getLastMessageId(chatroomId) {
  * checks whether user is active
  * @param user
  * @param chatroomId
+ * @param table
  * @returns {Promise<unknown>}
  */
-function isUserInactive(user, chatroomId) {
+function isUserInactive(user, chatroomId, table) {
     return new Promise(resolve => {
-        let query = `SELECT * FROM chat_active WHERE user='${user}' AND chat_room_id='${chatroomId}' LIMIT 1`;
+        let query = `SELECT * FROM ${table} WHERE user='${user}' AND chat_room_id='${chatroomId}' LIMIT 1`;
         pool.query(query,(err, result) => {
             if (err) throw err;
             resolve(result.length === 0);
@@ -318,5 +321,56 @@ function getEmptyRooms()
             }
             resolve(empty);
         });
+    });
+}
+
+async function setUserInactive() {
+    if (inactiveUsers.length > 0) {
+        for (let i = 0; i < inactiveUsers.length; i++){
+            let userInactive = await isUserInactive(inactiveUsers[i].user, inactiveUsers[i].chat,"chat_active_verify");
+            if (userInactive === true) {
+                let deleted = await deleteUser(inactiveUsers[i].user, inactiveUsers[i].chat);
+                if (deleted === true) {
+                    sendUserLeft(inactiveUsers[i].user,inactiveUsers[i].chat);
+                    inactiveUsers.splice(i,1);
+                }
+            }
+        }
+    }
+    inactiveUsers = await getActiveUsers();
+}
+
+function deleteUser(user, chatId) {
+    return new Promise(resolve => {
+        let query = `DELETE FROM chat_active WHERE user = '${user}' AND chat_room_id = '${chatId}'`;
+        pool.query(query,err => {
+            if (err) throw err;
+            resolve(true);
+        });
+    });
+}
+
+function getActiveUsers() {
+    return new Promise(resolve => {
+        let query = `SELECT * FROM chat_active`;
+        let active = [];
+        pool.query(query,async (err, result) => {
+            if (err) throw err;
+            for (let i = 0; i < result.length; i++) {
+                let roomEmpty = await isRoomEmpty(result[i].id);
+                if (roomEmpty === true) {
+                    let user = {user:result[i].user, chat:result[i].chat_room_id}
+                    active.push(user);
+                }
+            }
+            resolve(active);
+        });
+    });
+}
+
+function sendUserLeft(user, chat) {
+    let query = `INSERT INTO chat_messages (chat_room_id,msg_text) VALUES ('${chat}','${user} left the chat')`;
+    pool.query(query, err => {
+        if (err) throw err;
     });
 }

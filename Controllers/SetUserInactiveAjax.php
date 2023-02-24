@@ -12,16 +12,18 @@ class SetUserInactiveAjax extends AjaxBaseController
         $sRoomId = $this->getRequestParameter("roomId");
         $sWhere = " (chat_room_id = '{$sRoomId}') AND (user = '{$sUser}')";
 
-        $oActive = new ChatActive();
-        $oChatMsg = new ChatMessage();
-        if ($oActive->loadList($sWhere,1) !== false) {
-            $sActiveId = $oActive->loadList($sWhere,1)[0]["id"];
-            $oActive->delete($sActiveId);
-            if ($oActive->loadList("(chat_room_id = '{$sRoomId}')",1) !== false) {
+        $oActiveVerify = new ChatActiveVerify();
+        if ($oActiveVerify->loadList($sWhere,1) !== false) {
+            $sActiveId = $oActiveVerify->loadList($sWhere,1)[0]["id"];
+            $oActiveVerify->delete($sActiveId);
+            /*
+             * $oChatMsg = new ChatMessage();
+             * if ($oActiveVerify->loadList("(chat_room_id = '{$sRoomId}')",1) !== false) {
                 $this->sendUserLeftNotification($oChatMsg, $sRoomId, $sUser);
             } else {
                 $oChatMsg->deleteJoinNotificationsByRoomId($sRoomId);
             }
+             */
         }
     }
 
@@ -36,7 +38,6 @@ class SetUserInactiveAjax extends AjaxBaseController
     {
         $oChatMsg->setChat_room_id($sRoomId);
         $oChatMsg->setMsg_text($sUser." left the chat");
-        $oChatMsg->setCreated_at(date("Y.m.d H:i:s",time()));
         $oChatMsg->save();
     }
 }
