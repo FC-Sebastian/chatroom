@@ -6,11 +6,15 @@ const notificationSelect = $("#notificationSelect");
 const user = $("#chatHidden").val().slice(0,$("#chatHidden").val().indexOf("|"));
 const roomId = $("#chatHidden").val().slice($("#chatHidden").val().indexOf("|")+1);
 const fileInput = $("#picUpload");
+const previewDiv = $("#previewDiv");
 const previewImg = $("#preview");
+const previewText = $("#previewText");
+const previewClose = $("#closePreview");
 const pushButton = $("#push");
 let lastId = $("#lastMessage").val();
 const lightboxPic = $("#lightBoxPic");
 let imageUrls = [];
+let pressedKey = [];
 setInterval(reloadMessages,intervalTime);
 setInterval(loadActiveUsers,intervalTime);
 
@@ -24,10 +28,7 @@ $(document).ready(function () {
     fileInput.on("change",function () {
         showPreview();
     });
-    previewImg.click(function () {
-        previewImg.attr("src","");
-        fileInput.val("");
-    });
+    previewClose.click(hidePreview);
     if (navigator.userAgent.match(/firefox|fxios/i)) {
         $(window).on("beforeunload", function () {
             setUserInactive(false);
@@ -38,9 +39,17 @@ $(document).ready(function () {
         });
     }
     chatInput.on("keydown",function (evt) {
-        if (evt.key === "Enter") {
+        previewText.html(nl2br(chatInput.val()));
+        pressedKey[evt.key] = true;
+        if (evt.key === "Enter" && pressedKey["Shift"] !== true) {
             sendMsg();
         }
+    });
+    chatInput.on("keyup",function (evt) {
+        if (evt.key === "Enter" && chatInput.val().match(".") === null && pressedKey["Shift"] !== true) {
+            chatInput.val("");
+        }
+        delete pressedKey[evt.key];
     });
     pushButton.click(function () {
         if('serviceWorker' in navigator){
@@ -107,7 +116,7 @@ function urlBase64ToUint8Array(base64String) {
  * inserts sent message into db via ajax call and loads message contents into chat
  */
 function sendMsg() {
-    if (chatInput.val().length > 0 || (fileInput[0].files[0] !== undefined && fileInput[0].files[0].type.slice(0,6) === "image/")) {
+    if (chatInput.val().match(".") !== null || (fileInput[0].files[0] !== undefined && fileInput[0].files[0].type.slice(0,6) === "image/")) {
         let data = new FormData;
         data.append("text",chatInput.val());
         data.append("user",user);
@@ -122,9 +131,7 @@ function sendMsg() {
             "data":data,
             "processData":false,
             "complete": function (response) {
-                chatInput.val("");
-                fileInput.val("");
-                previewImg.attr("src","");
+                hidePreview();
             }
         };
         $.ajax(domain+"index.php", params);
@@ -241,7 +248,16 @@ function showPreview() {
     if (fileInput[0].files[0].type.slice(0,6) === "image/") {
         let url = window.URL.createObjectURL(fileInput[0].files[0]);
         previewImg.attr("src", url);
+        previewDiv.removeClass("d-none");
     }
+}
+
+function hidePreview() {
+    previewDiv.addClass("d-none");
+    previewImg.attr("src","");
+    fileInput.val("");
+    previewText.html("");
+    chatInput.val("");
 }
 
 /**
@@ -311,5 +327,20 @@ function prevLightbox() {
 function updateLBIndex() {
     let index = imageUrls.indexOf(lightboxPic.attr("src")) + 1;
     let max = imageUrls.length;
+    if (max <= 1) {
+        $("#next").addClass("d-none");
+        $("#prev").addClass("d-none");
+    } else {
+        $("#next").removeClass("d-none");
+        $("#prev").removeClass("d-none");
+    }
     $("#lightboxIndex").html(`${index}/${max}`);
+}
+
+function nl2br (str) {
+    if (typeof str === 'undefined' || str === null) {
+        return '';
+    }
+    let br= '<br>';
+    return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + br + '$2');
 }

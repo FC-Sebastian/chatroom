@@ -9,13 +9,12 @@ class Create extends BaseController
      */
     public function render()
     {
-        $sRoomName = $this->getRequestParameter("room_name");
+        $sRoomName = htmlspecialchars($this->getRequestParameter("room_name"));
+        $_SESSION["user"] = htmlspecialchars($this->getRequestParameter("user"));
 
         $oChatRoom = new ChatRoom();
         $oChatRoom->setRoom_name($sRoomName);
         $oChatRoom->save();
-        $_SESSION["user"] = $this->getRequestParameter("user");
-
 
         $this->redirect($this->getUrl("index.php?controller=Chat&chat=".$sRoomName));
         exit();

@@ -8,8 +8,8 @@ class Join extends BaseController
      */
     public function render()
     {
-        $sRoomName = $this->getRequestParameter("room_name");
-        $sUser = $this->getRequestParameter("user");
+        $sRoomName = htmlspecialchars($this->getRequestParameter("room_name"));
+        $sUser = htmlspecialchars($this->getRequestParameter("user"));
 
         $_SESSION["user"] = $sUser;
 

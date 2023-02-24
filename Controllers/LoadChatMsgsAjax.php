@@ -46,17 +46,17 @@ class LoadChatMsgsAjax extends AjaxBaseController
      */
     protected function buildMessageString($aChatMsg)
     {
-        $text = $this->decrypt($aChatMsg["msg_text"], Conf::getParam("key"));
+        $text = nl2br($this->decrypt($aChatMsg["msg_text"], Conf::getParam("key")));
         $sMessage ='<div class="col-12">
                             <div class="row '.( $_SESSION["user"] === $aChatMsg["user"] ? 'justify-content-end' : '' ).' g-0">
                                 <div class="col-sm-8 mb-2 g-2">
-                                    <div class="card shadow ">
-                                        <div class="card-body">
+                                    <div class="card shadow">
+                                        <div class="card-body rounded bg-opacity-10 '.( $_SESSION["user"] === $aChatMsg["user"] ? 'bg-success' : 'bg-primary' ).'">
                                             <h6 class="card-title">'.$aChatMsg["user"].':</h6>';
         if ($aChatMsg["picture_url"] !== null && $aChatMsg["picture_url"] !== "") {
-            $sMessage .= '<img class="img-fluid lightbox rounded w-100" src="'.$this->decrypt($aChatMsg["picture_url"], Conf::getParam("key")).'">';
+            $sMessage .= '<img class="lightbox d-block rounded mw-100" src="'.$this->decrypt($aChatMsg["picture_url"], Conf::getParam("key")).'">';
         }
-        $sMessage .= '<span class="card-text">'.$text.'</span>
+        $sMessage .= '<span class="card-text whiteSpace-preWrap">'.$text.'</span>
                                         </div>
                                     </div>
                                 </div>
