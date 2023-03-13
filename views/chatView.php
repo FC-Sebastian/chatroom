@@ -16,7 +16,7 @@
     </div>
 </div>
 <div class="row flex-grow-1">
-    <div class="col-4 d-sm-flex d-none flex-flow-column pt-2">
+    <div class="col-4 vh-100 d-sm-flex d-none flex-flow-column pt-2">
         <div class="row fit-content g-2 mb-2">
             <select id="notificationSelect" class="form-select">
                 <option>Notification sound active</option>
@@ -27,7 +27,7 @@
         </div>
         <ul id="userList" class="remaining-space overflow-auto list-group"></ul>
     </div>
-    <div class="col-sm-8 col-12 d-flex flex-flow-column pt-2">
+    <div class="col-sm-8 col-12 vh-100 d-flex flex-flow-column pt-2">
         <div id="chatDiv" class="border remaining-space rounded bg-secondary bg-opacity-10 overflow-auto g-0 align-content-start"></div>
         <div class="fit-content">
             <div class="col mt-2">

@@ -19,7 +19,7 @@
             const intervalTime = 1000;
         </script>
     </head>
-    <body class="bg-primary d-flex flex-column min-vh-100 bg-opacity-10">
+    <body class="bg-primary d-flex flex-column vh-100 bg-opacity-10">
     <?php if (get_class($controller) === "Chat") { ?>
         <nav class="navbar navbar-expand bg-primary d-sm-none px-1 justify-content-between">
             <button class="btn btn-secondary" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="#offcanvas">Active users</button>

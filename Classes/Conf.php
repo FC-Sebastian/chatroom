@@ -7,11 +7,11 @@ class Conf
     public static function getParam($key)
     {
         if (self::$confarray === null) {
-            if (!file_exists(__DIR__ . "/../config.php")) {
-                exit("Keine config.php gefunden");
+            if (!file_exists(__DIR__ . "/../config.json")) {
+                exit("Keine config.json gefunden");
             }
-            include __DIR__ . "/../config.php";
-            self::$confarray = $configarray;
+            $sConfJson = file_get_contents(__DIR__ . "/../config.json");
+            self::$confarray = json_decode($sConfJson,true);
         }
         if (isset(self::$confarray[$key])) {
             return self::$confarray[$key];

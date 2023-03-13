@@ -12,23 +12,19 @@ const app = express();
 const publicKey = "BP9dpMh9ZzDu76icN_y9poka-vUmxC1WSFrwxHSariK-puJvRrwcsTYNs2AOrZ6SzNPcVzWnPq6vH1Q-yCXdHXc";
 const privateKey = "WWE6g5zfMfrgkb27o44mfugBpnGfxTGGzykZjQLxu-c";
 let confParams;
-let pool;
 let emptyRooms = [];
 let inactiveUsers = [];
-$.ajax("http://192.168.2.186/chatroom/index.php",{
-    "type":"POST",
-    "async":false,
-    "data":{"controller":"GetConfParamsAjax"},
-    "success":function (response){
-        confParams = JSON.parse(response);
-        pool = mysql.createPool({
-            connectionLimit: 100,
-            host: confParams.host,
-            user: confParams.user,
-            password: confParams.pass,
-            database: confParams.db
-        });
-    }
+
+let confData = fs.readFileSync(__dirname +"/config.json");
+confParams = JSON.parse(confData);
+
+
+let pool = mysql.createPool({
+    connectionLimit: 100,
+    host: confParams.dbhost,
+    user: confParams.dbuser,
+    password: confParams.dbpass,
+    database: confParams.db
 });
 
 app.use(bodyParser.json());
