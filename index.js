@@ -7,6 +7,7 @@ const { window } = new JSDOM("");
 const $ = require('jquery')(window);
 const cors = require('cors');
 const fs = require('fs');
+const {Query} = require("mysql/lib/protocol/sequences");
 const app = express();
 const publicKey = "BP9dpMh9ZzDu76icN_y9poka-vUmxC1WSFrwxHSariK-puJvRrwcsTYNs2AOrZ6SzNPcVzWnPq6vH1Q-yCXdHXc";
 const privateKey = "WWE6g5zfMfrgkb27o44mfugBpnGfxTGGzykZjQLxu-c";
@@ -46,7 +47,7 @@ app.listen(port, ()=>{
 });
 
 //setInterval(sendPushNotifications,1000);
-setInterval(setUserInactive,1000);
+setInterval(setUserInactive,2000);
 setInterval(clearRooms,15000);
 
 /**
@@ -176,10 +177,10 @@ function getLastMessageId(chatroomId) {
  */
 function isUserInactive(user, chatroomId, table) {
     return new Promise(resolve => {
-        let query = `SELECT * FROM ${table} WHERE user='${user}' AND chat_room_id='${chatroomId}' LIMIT 1`;
+        let query = `SELECT * FROM ${table} WHERE user='${user}' AND chat_room_id='${chatroomId}' AND active='0' LIMIT 1`;
         pool.query(query,(err, result) => {
             if (err) throw err;
-            resolve(result.length === 0);
+            resolve(result.length === 1);
         });
     });
 }
@@ -324,14 +325,19 @@ function getEmptyRooms()
     });
 }
 
+/**
+ * checks if users are still active and deletes them if not
+ * then stores all active users in array
+ * @returns {Promise<void>}
+ */
 async function setUserInactive() {
     if (inactiveUsers.length > 0) {
         for (let i = 0; i < inactiveUsers.length; i++){
-            let userInactive = await isUserInactive(inactiveUsers[i].user, inactiveUsers[i].chat,"chat_active_verify");
+            let userInactive = await isUserInactive(inactiveUsers[i].user, inactiveUsers[i].chat_room_id,"chat_active");
             if (userInactive === true) {
-                let deleted = await deleteUser(inactiveUsers[i].user, inactiveUsers[i].chat);
+                let deleted = await deleteUser(inactiveUsers[i].user, inactiveUsers[i].chat_room_id);
                 if (deleted === true) {
-                    sendUserLeft(inactiveUsers[i].user,inactiveUsers[i].chat);
+                    sendUserLeft(inactiveUsers[i].user,inactiveUsers[i].chat_room_id);
                     inactiveUsers.splice(i,1);
                 }
             }
@@ -340,6 +346,12 @@ async function setUserInactive() {
     inactiveUsers = await getActiveUsers();
 }
 
+/**
+ * deletes user by username and chat room id
+ * @param user
+ * @param chatId
+ * @returns {Promise<unknown>}
+ */
 function deleteUser(user, chatId) {
     return new Promise(resolve => {
         let query = `DELETE FROM chat_active WHERE user = '${user}' AND chat_room_id = '${chatId}'`;
@@ -347,9 +359,14 @@ function deleteUser(user, chatId) {
             if (err) throw err;
             resolve(true);
         });
+        console.log(user + " deleted")
     });
 }
 
+/**
+ * queries db and returns list of active users
+ * @returns {Promise<unknown>}
+ */
 function getActiveUsers() {
     return new Promise(resolve => {
         let query = `SELECT * FROM chat_active`;
@@ -357,17 +374,18 @@ function getActiveUsers() {
         pool.query(query,async (err, result) => {
             if (err) throw err;
             for (let i = 0; i < result.length; i++) {
-                let roomEmpty = await isRoomEmpty(result[i].id);
-                if (roomEmpty === true) {
-                    let user = {user:result[i].user, chat:result[i].chat_room_id}
-                    active.push(user);
-                }
+                active.push(result[i]);
             }
             resolve(active);
         });
     });
 }
 
+/**
+ * sends "user left chat" notification
+ * @param user
+ * @param chat
+ */
 function sendUserLeft(user, chat) {
     let query = `INSERT INTO chat_messages (chat_room_id,msg_text) VALUES ('${chat}','${user} left the chat')`;
     pool.query(query, err => {

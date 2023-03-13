@@ -197,6 +197,8 @@ function loadActiveUsers() {
         "type":"POST",
         "success": function (response) {
             userList.html(response);
+            $("#offList").html(userList.html());
+            $("#offList").children()[0].remove();
         },
         "data":{
             "controller":"LoadActiveUsersAjax",

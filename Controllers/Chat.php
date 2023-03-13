@@ -17,25 +17,28 @@ class Chat extends BaseController
         $sChatroomName = $this->getRequestParameter("chat");
         $oChatroom = new ChatRoom();
         $oActive = new ChatActive();
-        $oActiveVerify = new ChatActiveVerify();
         $oChatMsg = new ChatMessage();
 
         $sWhere = "room_name = '{$sChatroomName}'";
         $this->aChatRoom = $oChatroom->loadList($sWhere,1)[0];
         $this->title = $this->aChatRoom["room_name"];
 
-        if (isset($_SESSION["user"]) && $oActiveVerify->loadList("(chat_room_id = '".$this->aChatRoom["id"]."') AND (user = '".$_SESSION["user"]."')") === false) {
+        if (isset($_SESSION["user"]) && $oActive->loadList("(chat_room_id = '".$this->aChatRoom["id"]."') AND (user = '".$_SESSION["user"]."') AND active='1'") === false) {
             if ($oActive->loadList("(chat_room_id = '".$this->aChatRoom["id"]."') AND (user = '".$_SESSION["user"]."')") === false) {
                 $oActive->setUser($_SESSION["user"]);
                 $oActive->setChat_room_id($this->aChatRoom["id"]);
+                $oActive->setActive(1);
                 $oActive->save();
                 $oChatMsg->setChat_room_id($this->aChatRoom["id"]);
                 $oChatMsg->setMsg_text($_SESSION["user"]." joined the chat");
                 $oChatMsg->save();
+            } else {
+                $aActiveUser = $oActive->loadList("(chat_room_id = '".$this->aChatRoom["id"]."') AND (user = '".$_SESSION["user"]."')")[0];
+                $aActiveUser["active"] = 1;
+                $oActive->assign($aActiveUser);
+                $oActive->save();
             }
-            $oActiveVerify->setUser($_SESSION["user"]);
-            $oActiveVerify->setChat_room_id($this->aChatRoom["id"]);
-            $oActiveVerify->save();
+
         }
 
         if (!isset($_SESSION["chat".$this->aChatRoom["id"]])) {

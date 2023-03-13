@@ -109,6 +109,13 @@ class BaseModel
         DbConnection::executeMysqlQuery($query);
     }
 
+    public function assign($aData)
+    {
+        foreach ($aData as $key => $value) {
+            $this->data[$key] = $value;
+        }
+    }
+
     protected function insert()
     {
         $querybegin = "INSERT INTO ".$this->getTableName()." (";
