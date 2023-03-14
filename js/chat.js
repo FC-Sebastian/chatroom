@@ -228,7 +228,7 @@ function setUserInactive(async) {
  * plays notification sound if permitted
  */
 function playNotification() {
-    if (notificationSelect.val() === "notification sound active" || (notificationSelect.val() === "notification sound when in background" && document.visibilityState === "hidden")) {
+    if (notificationSelect.val() === "Notification sound active" || (notificationSelect.val() === "Notification sound when in background" && document.visibilityState === "hidden")) {
         let notification = new Audio(domain+"sounds/notification.mp3");
         notification.play();
     }

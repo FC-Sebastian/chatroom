@@ -16,7 +16,7 @@
     </div>
 </div>
 <div class="row flex-grow-1">
-    <div class="col-4 vh-100 d-sm-flex d-none flex-flow-column pt-2">
+    <div class="col-4 vh-100 d-sm-flex d-none flex-flow-column p-2">
         <div class="row fit-content g-2 mb-2">
             <select id="notificationSelect" class="form-select">
                 <option>Notification sound active</option>
@@ -27,7 +27,23 @@
         </div>
         <ul id="userList" class="remaining-space overflow-auto list-group"></ul>
     </div>
-    <div class="col-sm-8 col-12 vh-100 d-flex flex-flow-column pt-2">
+    <div class="col-sm-8 col-12 vh-100 d-flex flex-flow-column p-2">
+        <nav class="navbar navbar-expand bg-primary d-sm-none px-1 justify-content-between mx-neg-2 mb-2">
+            <button class="btn btn-secondary" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="#offcanvas">Active users</button>
+            <a class="btn btn-danger end" href="<?= $controller->getUrl() ?>">Leave chat</a>
+        </nav>
+
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvas" aria-labelledby="offLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offLabel">Active users:</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div>
+                    <ul id="offList" class="overflow-auto list-group"></ul>
+                </div>
+            </div>
+        </div>
         <div id="chatDiv" class="border remaining-space rounded bg-secondary bg-opacity-10 overflow-auto g-0 align-content-start"></div>
         <div class="fit-content">
             <div class="col mt-2">
@@ -47,7 +63,7 @@
                     </div>
                 </div>
             </div>
-                <div class="input-group mb-2">
+                <div class="input-group">
                     <textarea id="chatInput" class="form-control whiteSpace-preWrap" name="chatText"></textarea>
                     <label for="picUpload" class="btn btn-primary d-flex px-4">
                         <img class="h-50 w-100 position-absolute start-50 top-50 translate-middle" src="<?= $controller->getUrl("icons/paperclip.svg") ?>" alt="attach">
