@@ -13,6 +13,7 @@ const previewClose = $("#closePreview");
 const pushButton = $("#push");
 let lastId = $("#lastMessage").val();
 const lightboxPic = $("#lightBoxPic");
+let modal = new bootstrap.Modal("#modal");
 let imageUrls = [];
 let pressedKey = [];
 setInterval(reloadMessages,intervalTime);
@@ -46,6 +47,7 @@ $(document).ready(function () {
         }
     });
     chatInput.on("keyup",function (evt) {
+        previewText.html(nl2br(chatInput.val()));
         if (evt.key === "Enter" && chatInput.val().match(".") === null && pressedKey["Shift"] !== true) {
             chatInput.val("");
         }
@@ -62,10 +64,15 @@ $(document).ready(function () {
         }
     });
     $("#next").click(function (){
-        nextLightbox()
+        nextLightbox();
     });
     $("#prev").click(function (){
-        prevLightbox()
+        prevLightbox();
+    });
+    $(window).on("keyup",function (evt) {
+        if (evt.key === "Escape") {
+            closeLightbox();
+        }
     });
 });
 
@@ -288,7 +295,6 @@ function updateLightbox() {
  */
 function imageClick(image) {
     lightboxPic.attr("src",image.attr("src"));
-    let modal = new bootstrap.Modal("#modal");
     modal.show();
     updateLBIndex();
 }
@@ -337,6 +343,10 @@ function updateLBIndex() {
         $("#prev").removeClass("d-none");
     }
     $("#lightboxIndex").html(`${index}/${max}`);
+}
+
+function closeLightbox() {
+    modal.hide();
 }
 
 function nl2br (str) {

@@ -50,13 +50,13 @@
                 <div id="previewDiv" class="d-none">
                     <div class="col-12">
                         <div class="row justify-content-end g-0">
-                        <div class="col-sm-8 mb-2 mt-0 g-2">
-                            <div class="card shadow">
+                        <div class="col-sm-6 mb-2 mt-0 g-2">
+                            <div class="card shadow max-vh-50 overflow-auto">
                                 <div class="card-body rounded bg-opacity-10 bg-success">
                                     <button id="closePreview" class="btn btn-outline-secondary float-end p-1 py-0">X</button>
                                     <h6 class="card-title"><?= $_SESSION["user"] ?>:</h6>
-                                    <img id="preview" class="rounded mw-100 d-block max-h-50" src="">
-                                    <span id="previewText" class="card-text whiteSpace-preWrap"></span>
+                                    <img id="preview" class="rounded mw-100 d-block max-vh-50" src="">
+                                    <span id="previewText" class="card-text whiteSpace-normal"></span>
                                 </div>
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                 </div>
             </div>
                 <div class="input-group">
-                    <textarea id="chatInput" class="form-control whiteSpace-preWrap" name="chatText"></textarea>
+                    <textarea id="chatInput" class="form-control whiteSpace-normal" name="chatText"></textarea>
                     <label for="picUpload" class="btn btn-primary d-flex px-4">
                         <img class="h-50 w-100 position-absolute start-50 top-50 translate-middle" src="<?= $controller->getUrl("icons/paperclip.svg") ?>" alt="attach">
                     </label>
