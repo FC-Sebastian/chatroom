@@ -8,7 +8,7 @@ class SetUserInactiveAjax extends AjaxBaseController
      */
     protected function executeSqlQuery()
     {
-        $sUser = $this->getRequestParameter("user");
+        $sUser = htmlspecialchars($this->getRequestParameter("user"));
         $sRoomId = $this->getRequestParameter("roomId");
         $sWhere = " (chat_room_id = '{$sRoomId}') AND (user = '{$sUser}')";
         $oActive = new ChatActive();

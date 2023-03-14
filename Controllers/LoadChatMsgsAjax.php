@@ -29,7 +29,7 @@ class LoadChatMsgsAjax extends AjaxBaseController
                     }
                 }
 
-                if (end($aMsgs)["user"] !== $_SESSION["user"] && end($aMsgs)["user"] !== "") {
+                if (htmlspecialchars(end($aMsgs)["user"]) !== $_SESSION["user"] && end($aMsgs)["user"] !== "") {
                     $blPlaySound = true;
                 }
                 $iLastId = end($aMsgs)["id"];
@@ -48,11 +48,11 @@ class LoadChatMsgsAjax extends AjaxBaseController
     {
         $text = nl2br($this->decrypt($aChatMsg["msg_text"], Conf::getParam("key")));
         $sMessage ='<div class="col-12">
-                            <div class="row '.( $_SESSION["user"] === $aChatMsg["user"] ? 'justify-content-end' : '' ).' g-0">
+                            <div class="row '.( $_SESSION["user"] === htmlspecialchars($aChatMsg["user"]) ? 'justify-content-end' : '' ).' g-0">
                                 <div class="col-sm-8 mb-2 g-2">
                                     <div class="card shadow">
-                                        <div class="card-body rounded bg-opacity-10 '.( $_SESSION["user"] === $aChatMsg["user"] ? 'bg-success' : 'bg-primary' ).'">
-                                            <h6 class="card-title">'.$aChatMsg["user"].':</h6>';
+                                        <div class="card-body rounded bg-opacity-10 '.( $_SESSION["user"] === htmlspecialchars($aChatMsg["user"]) ? 'bg-success' : 'bg-primary' ).'">
+                                            <h6 class="card-title">'.htmlspecialchars($aChatMsg["user"]).':</h6>';
         if ($aChatMsg["picture_url"] !== null && $aChatMsg["picture_url"] !== "") {
             $sMessage .= '<img class="lightbox d-block rounded mw-100" src="'.$this->decrypt($aChatMsg["picture_url"], Conf::getParam("key")).'">';
         }
