@@ -14,10 +14,11 @@ let confParams;
 let emptyRooms = [];
 let inactiveUsers = [];
 
+//getting config params from config.json
 let confData = fs.readFileSync(__dirname +"/config.json");
 confParams = JSON.parse(confData);
 
-
+//setting up MySQL connection pool
 let pool = mysql.createPool({
     connectionLimit: 100,
     host: confParams.dbhost,

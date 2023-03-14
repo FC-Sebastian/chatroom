@@ -1,18 +1,11 @@
-const form = $("#form");
-const create = $("#create");
-const join = $("#join");
-const userInput = $("#username");
-const roomInput = $("#room_name");
-const controller = $("#controller");
-
 //adding eventListener and loading chat-rooms
 $(document).ready(function () {
-   create.click(function (e){
+    $("#create").click(function (e){
        e.stopPropagation();
        e.preventDefault();
        createClick();
    });
-   join.click(function (e){
+    $("#join").click(function (e){
        e.stopPropagation();
        e.preventDefault();
        joinClick();
@@ -24,6 +17,9 @@ $(document).ready(function () {
  * otherwise submits form to create chat-room
  */
 function createClick() {
+    let userInput = $("#username");
+    let roomInput = $("#room_name");
+
     if (userInput.val().length > 0) {
         let params = {
             "type": "POST",
@@ -33,8 +29,8 @@ function createClick() {
             },
             "success": function (response) {
                 if (response === "valid") {
-                    controller.val("Create");
-                    form.submit();
+                    $("#controller").val("Create");
+                    $("#form").submit();
                 } else if (response === "empty") {
                     alert("Chatroom name cant be empty");
                 } else {
@@ -53,6 +49,9 @@ function createClick() {
  * otherwise submits form to join chatroom
  */
 function joinClick() {
+    let userInput = $("#username");
+    let roomInput = $("#room_name");
+
     if (userInput.val().length > 0) {
         if (roomInput.val().length > 0) {
             let params = {
@@ -64,8 +63,8 @@ function joinClick() {
                 },
                 "success":function (response) {
                     if (response === "valid") {
-                        controller.val("Join");
-                        form.submit();
+                        $("#controller").val("Join");
+                        $("#form").submit();
                     } else if (response === "noRoom") {
                         alert("Chatroom '"+roomInput.val()+"' not found")
                     } else {

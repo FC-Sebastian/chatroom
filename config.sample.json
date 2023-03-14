@@ -4,7 +4,7 @@
   "dbhost" : "YOUR VALUE HERE",
   "dbuser" : "YOUR VALUE HERE",
   "dbpass" : "YOUR VALUE HERE",
-  "database" : "YOUR VALUE HERE",
+  "db" : "YOUR VALUE HERE",
   "node" : "YOUR VALUE HERE",
   "pushPublicKey" : "YOUR VALUE HERE"
 }
