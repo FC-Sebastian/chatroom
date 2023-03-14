@@ -1,19 +1,13 @@
-const send = $("#send");
 const chatDiv = $("#chatDiv");
 const chatInput = $("#chatInput");
-const userList = $("#userList");
-const notificationSelect = $("#notificationSelect");
 const user = $("#chatHidden").val().slice(0,$("#chatHidden").val().indexOf("|"));
 const roomId = $("#chatHidden").val().slice($("#chatHidden").val().indexOf("|")+1);
 const fileInput = $("#picUpload");
 const previewDiv = $("#previewDiv");
 const previewImg = $("#preview");
 const previewText = $("#previewText");
-const previewClose = $("#closePreview");
-const pushButton = $("#push");
 let lastId = $("#lastMessage").val();
 const lightboxPic = $("#lightBoxPic");
-let modal = new bootstrap.Modal("#modal");
 let imageUrls = [];
 let pressedKey = [];
 setInterval(reloadMessages,intervalTime);
@@ -23,13 +17,13 @@ setInterval(loadActiveUsers,intervalTime);
 $(document).ready(function () {
     loadMessages();
     loadActiveUsers();
-    send.click(function () {
+    $("#send").click(function () {
         sendMsg();
     });
     fileInput.on("change",function () {
         showPreview();
     });
-    previewClose.click(hidePreview);
+    $("#closePreview").click(hidePreview);
     if (navigator.userAgent.match(/firefox|fxios/i)) {
         $(window).on("beforeunload", function () {
             setUserInactive(false);
@@ -53,7 +47,7 @@ $(document).ready(function () {
         }
         delete pressedKey[evt.key];
     });
-    pushButton.click(function () {
+    $("#push").click(function () {
         if('serviceWorker' in navigator){
             Notification.requestPermission()
                 .then(function () {
@@ -71,7 +65,8 @@ $(document).ready(function () {
     });
     $(window).on("keyup",function (evt) {
         if (evt.key === "Escape") {
-            closeLightbox();
+            let modal = new bootstrap.Modal("#modal");
+            modal.hide();
         }
     });
 });
@@ -203,8 +198,8 @@ function loadActiveUsers() {
     let params = {
         "type":"POST",
         "success": function (response) {
-            userList.html(response);
-            $("#offList").html(userList.html());
+            $("#userList").html(response);
+            $("#offList").html($("#userList").html());
             $("#offList").children()[0].remove();
         },
         "data":{
@@ -235,7 +230,7 @@ function setUserInactive(async) {
  * plays notification sound if permitted
  */
 function playNotification() {
-    if (notificationSelect.val() === "Notification sound active" || (notificationSelect.val() === "Notification sound when in background" && document.visibilityState === "hidden")) {
+    if ($("#notificationSelect").val() === "Notification sound active" || ($("#notificationSelect").val() === "Notification sound when in background" && document.visibilityState === "hidden")) {
         let notification = new Audio(domain+"sounds/notification.mp3");
         notification.play();
     }
@@ -261,6 +256,9 @@ function showPreview() {
     }
 }
 
+/**
+ * hides preview
+ */
 function hidePreview() {
     previewDiv.addClass("d-none");
     previewImg.attr("src","");
@@ -294,6 +292,7 @@ function updateLightbox() {
  * @param image
  */
 function imageClick(image) {
+    let modal = new bootstrap.Modal("#modal");
     lightboxPic.attr("src",image.attr("src"));
     modal.show();
     updateLBIndex();
@@ -345,10 +344,11 @@ function updateLBIndex() {
     $("#lightboxIndex").html(`${index}/${max}`);
 }
 
-function closeLightbox() {
-    modal.hide();
-}
-
+/**
+ * replaces linebreaks with break tags
+ * @param str
+ * @returns {string}
+ */
 function nl2br (str) {
     if (typeof str === 'undefined' || str === null) {
         return '';
