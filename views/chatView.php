@@ -47,22 +47,22 @@
         <div id="chatDiv" class="border remaining-space rounded bg-secondary bg-opacity-10 overflow-auto g-0 align-content-start"></div>
         <div class="fit-content">
             <div class="col mt-2">
-                <div id="previewDiv" class="d-none">
+                <div id="previewDiv" class="d-none row">
                     <div class="col-12">
                         <div class="row justify-content-end g-0">
-                        <div class="col-sm-6 mb-2 mt-0 g-2">
-                            <div class="card shadow max-vh-50 overflow-auto">
-                                <div class="card-body rounded bg-opacity-10 bg-success">
-                                    <button id="closePreview" class="btn btn-outline-secondary float-end p-1 py-0">X</button>
-                                    <h6 class="card-title"><?= $_SESSION["user"] ?>:</h6>
-                                    <img id="preview" class="rounded mw-100 d-block max-vh-50" src="">
-                                    <span id="previewText" class="card-text whiteSpace-normal"></span>
+                            <div class="col-sm-6 mb-2 mt-0 g-2 position-relative">
+                                <div class="card shadow w-100 max-vh-60 overflow-auto position-absolute top-neg-100">
+                                    <div class="card-body rounded bg-opacity-10 bg-success">
+                                        <button id="closePreview" class="btn btn-outline-secondary float-end p-1 py-0">X</button>
+                                        <h6 class="card-title"><?= $_SESSION["user"] ?>:</h6>
+                                        <img id="preview" class="rounded mw-100 d-block" src="">
+                                        <span id="previewText" class="card-text whiteSpace-normal"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
                 <div class="input-group">
                     <textarea id="chatInput" class="form-control whiteSpace-normal" name="chatText"></textarea>
                     <label for="picUpload" class="btn btn-primary d-flex px-4">
