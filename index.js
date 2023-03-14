@@ -7,7 +7,6 @@ const { window } = new JSDOM("");
 const $ = require('jquery')(window);
 const cors = require('cors');
 const fs = require('fs');
-const {Query} = require("mysql/lib/protocol/sequences");
 const app = express();
 const publicKey = "BP9dpMh9ZzDu76icN_y9poka-vUmxC1WSFrwxHSariK-puJvRrwcsTYNs2AOrZ6SzNPcVzWnPq6vH1Q-yCXdHXc";
 const privateKey = "WWE6g5zfMfrgkb27o44mfugBpnGfxTGGzykZjQLxu-c";

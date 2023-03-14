@@ -13,7 +13,7 @@ class Join extends BaseController
 
         $_SESSION["user"] = $sUser;
 
-        $this->redirect($this->getUrl("index.php?controller=Chat&chat=".$sRoomName));
+        $this->redirect($this->getUrl("index.php?controller=Chat&chat=".urlencode($sRoomName)));
         exit();
     }
 }

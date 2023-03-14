@@ -16,7 +16,7 @@ class Create extends BaseController
         $oChatRoom->setRoom_name($sRoomName);
         $oChatRoom->save();
 
-        $this->redirect($this->getUrl("index.php?controller=Chat&chat=".$sRoomName));
+        $this->redirect($this->getUrl("index.php?controller=Chat&chat=".urlencode($sRoomName)));
         exit();
     }
 }
