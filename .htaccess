@@ -1,2 +1,7 @@
 Header set Access-Control-Allow-Origin "*"
 Header set Access-Control-Allow-Methods: "POST"
+
+<FilesMatch ".json" >
+    Order Allow,Deny
+    Deny from All
+</FilesMatch>
