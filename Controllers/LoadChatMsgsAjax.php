@@ -23,7 +23,7 @@ class LoadChatMsgsAjax extends AjaxBaseController
             if ($aMsgs !== false) {
                 foreach ($aMsgs as $aChatMsg) {
                     if ($aChatMsg["user"] === "") {
-                        $sMsgsDivsString .= "<div class='text-center'><span>".$aChatMsg["msg_text"]."</span></div>";
+                        $sMsgsDivsString .= "<div class='text-center text-break'><span>".$aChatMsg["msg_text"]."</span></div>";
                     } else {
                         $sMsgsDivsString .= $this->buildMessageString($aChatMsg);
                     }
@@ -56,7 +56,7 @@ class LoadChatMsgsAjax extends AjaxBaseController
         if ($aChatMsg["picture_url"] !== null && $aChatMsg["picture_url"] !== "") {
             $sMessage .= '<img class="lightbox d-block rounded mw-100" src="'.$this->decrypt($aChatMsg["picture_url"], Conf::getParam("key")).'">';
         }
-        $sMessage .= '<span class="card-text whiteSpace-preWrap">'.$text.'</span>
+        $sMessage .= '                      <span class="card-text whiteSpace-preWrap">'.$text.'</span>
                                         </div>
                                     </div>
                                 </div>

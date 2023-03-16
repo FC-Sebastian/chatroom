@@ -5,25 +5,39 @@
 ?>
 <div id="modal" class="modal fade">
     <div class="modal-dialog modal-lg modal-dialog-centered justify-content-center">
-        <div class="modal-content bg-transparent w-auto">
-            <div id="modalBody" class="modal-body text-center text-white p-0 m-0">
-                <p id="lightboxIndex" class="position-absolute top-0 start-50 bg-secondary rounded px-1 translate-middle-x "></p>
-                <img id="prev" class="position-absolute top-50 start-0 translate-middle-y" src="<?= $controller->getUrl("icons/prev.svg") ?>">
-                <img id="lightBoxPic" class="img-fluid rounded d-inline" src="">
-                <img id="next" class="position-absolute top-50 end-0 translate-middle-y" src="<?= $controller->getUrl("icons/next.svg") ?>">
+        <div class="modal-content bg-transparent border-0 w-auto">
+            <div id="modalBody" class="modal-body text-center text-white w-auto p-0 m-0">
+                <button type="button" class="btn-close position-absolute top 0 end-0 p-3 z-2" data-bs-dismiss="modal"></button>
+                <div id="lightBox" class="carousel slide" data-bs-interval="false">
+                    <div id="lightboxIndex" class="carousel-indicators"></div>
+                    <div id="lightboxInner" class="carousel-inner"></div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#lightBox" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#lightBox" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
         </div>
     </div>
 </div>
 <div class="row flex-grow-1">
     <div class="col-4 vh-100 d-sm-flex d-none flex-flow-column p-2">
+        <h6 class="text-break border rounded bg-secondary bg-opacity-10 p-2"><?= $controller->aChatRoom["room_name"] ?></h6>
         <div class="row fit-content g-2 mb-2">
-            <select id="notificationSelect" class="form-select">
-                <option>Notification sound active</option>
-                <option>Notification sound when in background</option>
-                <option>Notification sound inactive</option>
-            </select>
-            <button id="push" class="btn btn-primary">Get push notifications</button>
+            <div class="col-12">
+                <select id="notificationSelect" class="form-select">
+                    <option>Notification sound active</option>
+                    <option>Notification sound when in background</option>
+                    <option>Notification sound inactive</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <button id="push" class="btn btn-primary w-100">Get push notifications</button>
+            </div>
         </div>
         <ul id="userList" class="remaining-space overflow-auto list-group"></ul>
     </div>
@@ -56,7 +70,7 @@
                                         <button id="closePreview" class="btn btn-outline-secondary float-end p-1 py-0">X</button>
                                         <h6 class="card-title"><?= $_SESSION["user"] ?>:</h6>
                                         <img id="preview" class="rounded mw-100 d-block" src="">
-                                        <span id="previewText" class="card-text whiteSpace-normal"></span>
+                                        <span id="previewText" class="card-text text-wrap"></span>
                                     </div>
                                 </div>
                             </div>
@@ -64,7 +78,7 @@
                     </div>
                 </div>
                 <div class="input-group">
-                    <textarea id="chatInput" class="form-control whiteSpace-normal" name="chatText"></textarea>
+                    <textarea id="chatInput" class="form-control text-wrap" name="chatText"></textarea>
                     <label for="picUpload" class="btn btn-primary d-flex px-4">
                         <img class="h-50 w-100 position-absolute start-50 top-50 translate-middle" src="<?= $controller->getUrl("icons/paperclip.svg") ?>" alt="attach">
                     </label>

@@ -29,10 +29,6 @@
     border-bottom-left-radius: 0.375rem;
 }
 
-.whiteSpace-normal {
-    white-space: normal;
-}
-
 .max-vh-60 {
     max-height: 60vh;
 }
@@ -44,4 +40,15 @@
 .top-neg-100 {
     transform: translateY(-100%) !important;
     top: 100% !important;
+}
+
+.z-2 {
+    z-index: 2;
+}
+
+.lightBoxPic{
+    max-height: 90vh;
+    max-width: 90vw;
+    height: auto;
+    width: auto;
 }

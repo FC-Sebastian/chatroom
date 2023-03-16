@@ -27,10 +27,12 @@ class SendChatMsgAjax extends AjaxBaseController
      */
     protected function getFileUrlFromUpload()
     {
+        $oActive = new ChatActive();
+        $aUser = $oActive->loadList("(chat_room_id = '{$this->getRequestParameter("roomId")}') AND (user = '{$this->getRequestParameter("user")}')", 1)[0];
         $sTmppath = $_FILES["upload"]["tmp_name"];
         $sOriginalName = $_FILES["upload"]["name"];
         $sExtension = substr($sOriginalName,strrpos($sOriginalName, "."));
-        $sName = $this->getRequestParameter("roomId").$this->getRequestParameter("user").date("Y_m_d-H_i_s",time()).$sExtension;
+        $sName = $this->getRequestParameter("roomId")."_".$aUser["id"]."_".date("Y_m_d-H_i_s",time()).$sExtension;
         $sType = $_FILES["upload"]["type"];
         $sLocationbegin = __DIR__ . '\..\pics\\';
         $sLocation = $sLocationbegin . $sName;
