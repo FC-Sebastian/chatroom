@@ -1,7 +1,7 @@
 const chatInput = $("#chatInput");
 const fileInput = $("#picUpload");
 let lastId = $("#lastMessage").val();
-let lastUserId = false;
+let subscribed = false;
 let modal = new bootstrap.Modal("#modal");
 let imageUrls = [];
 let pressedKey = [];
@@ -22,10 +22,16 @@ $(document).ready(function () {
     if (navigator.userAgent.match(/firefox|fxios/i)) {
         $(window).on("beforeunload", function () {
             setUserInactive(false);
+            if (subscribed === true) {
+                pushSubscribe();
+            }
         });
     } else {
         $(window).on("beforeunload", function () {
             setUserInactive(true);
+            if (subscribed === true) {
+                pushSubscribe();
+            }
         });
     }
     chatInput.on("keydown",function (evt) {
@@ -47,7 +53,7 @@ $(document).ready(function () {
             Notification.requestPermission()
                 .then(function () {
                     if(Notification.permission === "granted") {
-                        pushSubscribe();
+                        subscribed = true;
                     }
             });
         }
@@ -72,7 +78,7 @@ async function pushSubscribe() {
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey)
     });
-    const params = JSON.stringify({subscription:subscription, username:chatHidden.val().slice(0,chatHidden.val().indexOf("|")), chatroomId:chatHidden.val().slice(chatHidden.val().indexOf("|")+1)})
+    const params = JSON.stringify({subscription:subscription, username:chatHidden.val().slice(0,chatHidden.val().indexOf("|")), chatroomId:chatHidden.val().slice(chatHidden.val().indexOf("|")+1), lastMessage:lastId});
 
     await fetch(nodeDomain+"subscribe", {
         method: "POST",

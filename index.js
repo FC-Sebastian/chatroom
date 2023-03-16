@@ -34,7 +34,7 @@ webPush.setVapidDetails("mailto:test@mail.com",publicKey,privateKey);
 app.post("/subscribe", (req,res) =>{
     const params = req.body;
     res.status(201).json({});
-    saveSubscription(params.subscription, params.username, params.chatroomId);
+    saveSubscription(params.subscription, params.username, params.chatroomId, params.lastMessage);
 });
 
 const port = 3000;
@@ -42,7 +42,7 @@ app.listen(port, ()=>{
     console.log(`server started on ${port}`);
 });
 
-//setInterval(sendPushNotifications,1000);
+setInterval(sendPushNotifications,1000);
 setInterval(setUserInactive,1000);
 setInterval(clearRooms,15000);
 
@@ -53,10 +53,10 @@ setInterval(clearRooms,15000);
  * @param chatroomId
  * @returns {Promise<void>}
  */
-async function saveSubscription(sub, username, chatroomId){
+async function saveSubscription(sub, username, chatroomId, lastMessage){
     let subUnique = await checkSubscriptionUnique(username,chatroomId);
     if (subUnique === true) {
-        let query = `INSERT INTO chat_subscriptions (chat_room_id,user,subscription) VALUES ('${chatroomId}','${username}','${cipher(JSON.stringify(sub),"encrypt")}')`;
+        let query = `INSERT INTO chat_subscriptions (chat_room_id,user,subscription,last_message_id) VALUES ('${chatroomId}','${username}','${cipher(JSON.stringify(sub),"encrypt")}','${lastMessage}')`;
         pool.query(query,function (err){
             if (err) throw err;
         });
@@ -106,22 +106,36 @@ function cipher(data,process){
  * sends push notifications
  */
 function sendPushNotifications(){
-    console.log("sending PN");
     let query = "SELECT * FROM chat_subscriptions";
     pool.query(query, async function (err, result){
         if (err) throw err;
         for (let i = 0; i < result.length; i++){
             let pushNecessary = await isPushNecessary(result[i]);
             if (pushNecessary === true) {
+                let room = await getRoomNameById(result[i].chat_room_id);
                 let payload = JSON.stringify({
-                    title:"Hey " + result[i].user + "!",
-                    body:"There are new messages for you"
+                    body:"There are new messages for you",
+                    url:confParams.url,
+                    chat:room,
+                    user:result[i].user,
                 });
                 let subscription = JSON.parse(cipher(result[i].subscription,"decrypt"));
                 webPush.sendNotification(subscription,payload);
                 console.log("PN sent");
             }
         }
+    });
+}
+
+function getRoomNameById(chatroomId){
+    return new Promise(resolve => {
+        let query = `SELECT room_name FROM chat_rooms WHERE id = '${chatroomId}' LIMIT 1`;
+        pool.query(query,(err, result) => {
+            if (err) throw err;
+            if (result.length > 0) {
+                resolve(result[0].room_name);
+            }
+        });
     });
 }
 
@@ -132,7 +146,7 @@ function sendPushNotifications(){
  */
 function isPushNecessary(subscriptionData){
     return new Promise(async resolve=> {
-        let userInactive = await isUserInactive(subscriptionData.user,subscriptionData.chat_room_id,"chat_active");
+        let userInactive = await isUserDeleted(subscriptionData.user,subscriptionData.chat_room_id,"chat_active");
         if (userInactive === true) {
             console.log("user inactive");
             let lastMessageId = await getLastMessageId(subscriptionData.chat_room_id);
@@ -160,6 +174,23 @@ function getLastMessageId(chatroomId) {
             if (result.length > 0) {
                 resolve(result[0].id);
             }
+        });
+    });
+}
+
+/**
+ * checks whether user is deleted
+ * @param user
+ * @param chatroomId
+ * @param table
+ * @returns {Promise<unknown>}
+ */
+function isUserDeleted(user, chatroomId, table) {
+    return new Promise(resolve => {
+        let query = `SELECT * FROM ${table} WHERE user='${user}' AND chat_room_id='${chatroomId}' LIMIT 1`;
+        pool.query(query,(err, result) => {
+            if (err) throw err;
+            resolve(result.length === 0);
         });
     });
 }
