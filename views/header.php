@@ -16,7 +16,7 @@
             const domain = "<?= $controller->getUrl() ?>";
             const nodeDomain = "<?= Conf::getParam("node") ?>";
             const publicKey = "<?= Conf::getParam("pushPublicKey") ?>";
-            const intervalTime = 1000;
+            const intervalTime = 100;
         </script>
     </head>
     <body class="bg-primary d-flex flex-column vh-100 bg-opacity-10">

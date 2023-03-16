@@ -10,6 +10,7 @@ class LoadActiveUsersAjax extends AjaxBaseController
     protected function executeSqlQuery()
     {
         $sChatroomId = $this->getRequestParameter("id");
+        $aChatList = $this->getRequestParameter("userIds");
 
         $oActive = new ChatActive();
         $sWhere = "chat_room_id = '{$sChatroomId}'";
@@ -17,11 +18,16 @@ class LoadActiveUsersAjax extends AjaxBaseController
 
         $sReturnString = "";
         if ($aActiveUsers !== false) {
-            $sReturnString .= "<li class='list-group-item sticky-top list-group-item-dark'>Active users:<a class='btn btn-sm btn-danger float-end' href='{$this->getUrl()}'>Leave chat</a></li>";
+
             foreach ($aActiveUsers as $user) {
-                $sReturnString .= '<li class="list-group-item"><span class="text-break">'.$user["user"].'</span></li>';
+                if ($aChatList === false || in_array($user["id"], $aChatList) === false) {
+                    $sReturnString .= '<li id="'.$user["id"].'" class="list-group-item"><span class="text-break">'.$user["user"].'</span></li>';
+                } else {
+                    unset($aChatList[array_search($user["id"],$aChatList)]);
+                }
             }
         }
-        echo $sReturnString;
+
+        echo json_encode(["text" => $sReturnString, "deleteIds" => $aChatList]);
     }
 }

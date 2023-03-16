@@ -168,19 +168,36 @@ function loadMessages() {
  * loads active users into user list via ajax call
  */
 function loadActiveUsers() {
+    let activeIds = getActiveIds();
     let params = {
         "type":"POST",
         "success": function (response) {
-            $("#userList").html(response);
+            let responseJSON = JSON.parse(response);
+            $("#userList").append(responseJSON.text);
+            for (let i = 0; i < Object.keys(responseJSON.deleteIds).length; i++) {
+                let idString = `#${responseJSON.deleteIds[Object.keys(responseJSON.deleteIds)[i]]}`;
+                $(idString).remove();
+            }
             $("#offList").html($("#userList").html());
             $("#offList").children()[0].remove();
         },
         "data":{
             "controller":"LoadActiveUsersAjax",
-            "id":$("#chatHidden").val().slice($("#chatHidden").val().indexOf("|")+1)
+            "id":$("#chatHidden").val().slice($("#chatHidden").val().indexOf("|")+1),
+            "userIds":activeIds
         }
     };
     $.ajax(domain+"index.php", params);
+}
+
+function getActiveIds() {
+    let ids = [];
+    $("#userList").children().each(function (index){
+        if (index > 0) {
+            ids.push($(this).attr("id"));
+        }
+    });
+    return ids;
 }
 
 /**
