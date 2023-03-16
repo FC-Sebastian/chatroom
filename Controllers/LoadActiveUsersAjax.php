@@ -17,7 +17,7 @@ class LoadActiveUsersAjax extends AjaxBaseController
 
         $sReturnString = "";
         if ($aActiveUsers !== false) {
-            $sReturnString .= '<li class="list-group-item sticky-top list-group-item-dark">Active users:<a class="btn btn-sm btn-danger float-end" href="'.$this->getUrl().'">Leave chat</a></li>';
+            $sReturnString .= "<li class='list-group-item sticky-top list-group-item-dark'>Active users:<a class='btn btn-sm btn-danger float-end' href='{$this->getUrl()}'>Leave chat</a></li>";
             foreach ($aActiveUsers as $user) {
                 $sReturnString .= '<li class="list-group-item"><span class="text-break">'.$user["user"].'</span></li>';
             }

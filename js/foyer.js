@@ -29,7 +29,7 @@ function createClick() {
             },
             "success": function (response) {
                 if (response === "valid") {
-                    $("#controller").val("Create");
+                    $("#action").val("create");
                     $("#form").submit();
                 } else if (response === "empty") {
                     alert("Chatroom name cant be empty");
@@ -63,7 +63,7 @@ function joinClick() {
                 },
                 "success":function (response) {
                     if (response === "valid") {
-                        $("#controller").val("Join");
+                        $("#action").val("join");
                         $("#form").submit();
                     } else if (response === "noRoom") {
                         alert("Chatroom '"+roomInput.val()+"' not found")
