@@ -43,7 +43,7 @@ app.listen(port, ()=>{
 });
 
 //setInterval(sendPushNotifications,1000);
-setInterval(setUserInactive,2000);
+setInterval(setUserInactive,1000);
 setInterval(clearRooms,15000);
 
 /**
@@ -339,7 +339,7 @@ async function setUserInactive() {
             }
         }
     }
-    inactiveUsers = await getActiveUsers();
+    inactiveUsers = await getInactiveUsers();
 }
 
 /**
@@ -363,9 +363,9 @@ function deleteUser(user, chatId) {
  * queries db and returns list of active users
  * @returns {Promise<unknown>}
  */
-function getActiveUsers() {
+function getInactiveUsers() {
     return new Promise(resolve => {
-        let query = `SELECT * FROM chat_active`;
+        let query = `SELECT * FROM chat_active WHERE active = '0'`;
         let active = [];
         pool.query(query,async (err, result) => {
             if (err) throw err;

@@ -7,7 +7,7 @@ const previewDiv = $("#previewDiv");
 const previewImg = $("#preview");
 const previewText = $("#previewText");
 let lastId = $("#lastMessage").val();
-const lightboxPic = $("#lightBoxPic");
+let modal = new bootstrap.Modal("#modal");
 let imageUrls = [];
 let pressedKey = [];
 setInterval(reloadMessages,intervalTime);
@@ -57,15 +57,8 @@ $(document).ready(function () {
             });
         }
     });
-    $("#next").click(function (){
-        nextLightbox();
-    });
-    $("#prev").click(function (){
-        prevLightbox();
-    });
     $(window).on("keyup",function (evt) {
         if (evt.key === "Escape") {
-            let modal = new bootstrap.Modal("#modal");
             modal.hide();
         }
     });
@@ -132,7 +125,7 @@ function sendMsg() {
             "contentType":false,
             "data":data,
             "processData":false,
-            "complete": function (response) {
+            "complete": function () {
                 hidePreview();
             }
         };
@@ -273,75 +266,36 @@ function hidePreview() {
  * updates light box index
  */
 function updateLightbox() {
-    imageUrls = [];
     let images = $(".lightbox");
+    let innerLength = $("#lightboxInner").length - 1;
     images.each(function (index) {
         let image = $(images[index]);
-        image.off("click");
-        image.click(function (){
-            imageClick(image);
-        });
-        imageUrls.push(image.attr("src"));
+        if (imageUrls.includes(image.attr("src")) === false) {
+            imageUrls.push(image.attr("src"));
+            let lbPic = `<div class="carousel-item"><img src="${image.attr("src")}" class="d-block lightBoxPic"></div>`;
+            let lbIndex = `<button type="button" data-bs-target="#lightBox" data-bs-slide-to="${innerLength + index}" aria-label="Slide ${innerLength + index + 1}"></button>`;
+            $("#lightboxInner").append($(lbPic));
+            $("#lightboxIndex").append($(lbIndex));
+            image.click(function (){
+                imageClick(innerLength + index);
+            });
+        }
     });
-    updateLBIndex();
 }
 
 /**
  * loads clicked image into modal and displays it
  * updates light box index
- * @param image
+ * @param index
  */
-function imageClick(image) {
-    let modal = new bootstrap.Modal("#modal");
-    lightboxPic.attr("src",image.attr("src"));
+function imageClick(index) {
+    let active = $(".active");
+    active.each(function (index) {
+       $(active[index]).removeClass("active");
+    });
+    $($("#lightboxInner").children()[index]).addClass("active");
+    $($("#lightboxIndex").children()[index]).addClass("active");
     modal.show();
-    updateLBIndex();
-}
-
-/**
- * displays next chat image in light box
- * updates light box index
- */
-function nextLightbox() {
-    let index = imageUrls.indexOf(lightboxPic.attr("src"));
-    if (index === imageUrls.length - 1) {
-        index = 0;
-    } else {
-        index += 1;
-    }
-    lightboxPic.attr("src",imageUrls[index]);
-    updateLBIndex();
-}
-
-/**
- * displays previous image in light box
- * updates light box index
- */
-function prevLightbox() {
-    let index = imageUrls.indexOf(lightboxPic.attr("src"));
-    if (index === 0) {
-        index = imageUrls.length - 1;
-    } else {
-        index -= 1;
-    }
-    lightboxPic.attr("src",imageUrls[index]);
-    updateLBIndex();
-}
-
-/**
- * updates light box index
- */
-function updateLBIndex() {
-    let index = imageUrls.indexOf(lightboxPic.attr("src")) + 1;
-    let max = imageUrls.length;
-    if (max <= 1) {
-        $("#next").addClass("d-none");
-        $("#prev").addClass("d-none");
-    } else {
-        $("#next").removeClass("d-none");
-        $("#prev").removeClass("d-none");
-    }
-    $("#lightboxIndex").html(`${index}/${max}`);
 }
 
 /**
