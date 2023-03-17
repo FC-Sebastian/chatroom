@@ -39,7 +39,9 @@
                 <button id="push" class="btn btn-primary w-100">Get push notifications</button>
             </div>
         </div>
-        <ul id="userList" class="remaining-space overflow-auto list-group"></ul>
+        <ul id="userList" class="remaining-space overflow-auto list-group">
+            <li class='list-group-item sticky-top list-group-item-dark'>Active users:<a class='btn btn-sm btn-danger float-end' href='<?= $controller->getUrl() ?>'>Leave chat</a></li>
+        </ul>
     </div>
     <div class="col-sm-8 col-12 vh-100 d-flex flex-flow-column p-2">
         <nav class="navbar navbar-expand bg-primary d-sm-none px-1 justify-content-between mx-neg-2 mb-2">

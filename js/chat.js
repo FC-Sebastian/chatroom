@@ -1,16 +1,11 @@
-const chatDiv = $("#chatDiv");
 const chatInput = $("#chatInput");
-const user = $("#chatHidden").val().slice(0,$("#chatHidden").val().indexOf("|"));
-const roomId = $("#chatHidden").val().slice($("#chatHidden").val().indexOf("|")+1);
 const fileInput = $("#picUpload");
-const previewDiv = $("#previewDiv");
-const previewImg = $("#preview");
-const previewText = $("#previewText");
 let lastId = $("#lastMessage").val();
+let subscribed = false;
 let modal = new bootstrap.Modal("#modal");
 let imageUrls = [];
 let pressedKey = [];
-setInterval(reloadMessages,intervalTime);
+setInterval(loadMessages,intervalTime);
 setInterval(loadActiveUsers,intervalTime);
 
 //loading active users and chat messages, adding eventListeners and checking browser
@@ -27,21 +22,27 @@ $(document).ready(function () {
     if (navigator.userAgent.match(/firefox|fxios/i)) {
         $(window).on("beforeunload", function () {
             setUserInactive(false);
+            if (subscribed === true) {
+                pushSubscribe();
+            }
         });
     } else {
         $(window).on("beforeunload", function () {
             setUserInactive(true);
+            if (subscribed === true) {
+                pushSubscribe();
+            }
         });
     }
     chatInput.on("keydown",function (evt) {
-        previewText.html(nl2br(chatInput.val()));
+        $("#previewText").html(nl2br(chatInput.val()));
         pressedKey[evt.key] = true;
         if (evt.key === "Enter" && pressedKey["Shift"] !== true) {
             sendMsg();
         }
     });
     chatInput.on("keyup",function (evt) {
-        previewText.html(nl2br(chatInput.val()));
+        $("#previewText").html(nl2br(chatInput.val()));
         if (evt.key === "Enter" && chatInput.val().match(".") === null && pressedKey["Shift"] !== true) {
             chatInput.val("");
         }
@@ -52,7 +53,7 @@ $(document).ready(function () {
             Notification.requestPermission()
                 .then(function () {
                     if(Notification.permission === "granted") {
-                        pushSubscribe();
+                        subscribed = true;
                     }
             });
         }
@@ -69,6 +70,7 @@ $(document).ready(function () {
  * @returns {Promise<void>}
  */
 async function pushSubscribe() {
+    let chatHidden = $("#chatHidden");
     const register = await navigator.serviceWorker.register(domain + 'sw.js', {
         scope: domain
     });
@@ -76,7 +78,7 @@ async function pushSubscribe() {
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey)
     });
-    const params = JSON.stringify({subscription:subscription, username:user, chatroomId:roomId})
+    const params = JSON.stringify({subscription:subscription, username:chatHidden.val().slice(0,chatHidden.val().indexOf("|")), chatroomId:chatHidden.val().slice(chatHidden.val().indexOf("|")+1), lastMessage:lastId});
 
     await fetch(nodeDomain+"subscribe", {
         method: "POST",
@@ -95,7 +97,7 @@ async function pushSubscribe() {
 function urlBase64ToUint8Array(base64String) {
     const padding = "=".repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
-        .replace(/\-/g, "+")
+        .replace(/-/g, "+")
         .replace(/_/g, "/");
 
     const rawData = window.atob(base64);
@@ -112,10 +114,11 @@ function urlBase64ToUint8Array(base64String) {
  */
 function sendMsg() {
     if (chatInput.val().match(".") !== null || (fileInput[0].files[0] !== undefined && fileInput[0].files[0].type.slice(0,6) === "image/")) {
+        let chatHidden = $("#chatHidden");
         let data = new FormData;
         data.append("text",chatInput.val());
-        data.append("user",user);
-        data.append("roomId",roomId);
+        data.append("user",chatHidden.val().slice(0,chatHidden.val().indexOf("|")));
+        data.append("roomId",chatHidden.val().slice(chatHidden.val().indexOf("|")+1));
         data.append("upload",fileInput[0].files[0]);
         data.append("controller","SendChatMsgAjax");
         let params = {
@@ -136,7 +139,7 @@ function sendMsg() {
 /**
  * reloads the chat via ajax call
  */
-function reloadMessages() {
+function loadMessages() {
     let params = {
         "type":"POST",
         "success": function (response) {
@@ -144,7 +147,7 @@ function reloadMessages() {
             if (responseJson.lastId !== lastId) {
                 lastId = responseJson.lastId;
                 let newMessages = $(responseJson.text);
-                chatDiv.append(newMessages);
+                $("#chatDiv").append(newMessages);
                 if (responseJson.notification === true) {
                     playNotification();
                 }
@@ -154,30 +157,7 @@ function reloadMessages() {
         },
         "data":{
             "controller":"LoadChatMsgsAjax",
-            "id":roomId,
-            "lastMessage":lastId
-        }
-    };
-    $.ajax(domain+"index.php", params);
-}
-
-/**
- * loads chat via ajax call and scrolls to the bottom of chat
- */
-function loadMessages() {
-    let params = {
-        "type":"POST",
-        "success": function (response) {
-            let responseJson = JSON.parse(response);
-            let newMessages = $(responseJson.text);
-            chatDiv.append(newMessages);
-            lastId = responseJson.lastId;
-            scrollToChatBottom();
-            updateLightbox();
-        },
-        "data":{
-            "controller":"LoadChatMsgsAjax",
-            "id":roomId,
+            "id":$("#chatHidden").val().slice($("#chatHidden").val().indexOf("|")+1),
             "lastMessage":lastId
         }
     };
@@ -188,32 +168,50 @@ function loadMessages() {
  * loads active users into user list via ajax call
  */
 function loadActiveUsers() {
+    let activeIds = getActiveIds();
     let params = {
         "type":"POST",
         "success": function (response) {
-            $("#userList").html(response);
+            let responseJSON = JSON.parse(response);
+            $("#userList").append(responseJSON.text);
+            for (let i = 0; i < Object.keys(responseJSON.deleteIds).length; i++) {
+                let idString = `#${responseJSON.deleteIds[Object.keys(responseJSON.deleteIds)[i]]}`;
+                $(idString).remove();
+            }
             $("#offList").html($("#userList").html());
             $("#offList").children()[0].remove();
         },
         "data":{
             "controller":"LoadActiveUsersAjax",
-            "id":roomId
+            "id":$("#chatHidden").val().slice($("#chatHidden").val().indexOf("|")+1),
+            "userIds":activeIds
         }
     };
     $.ajax(domain+"index.php", params);
+}
+
+function getActiveIds() {
+    let ids = [];
+    $("#userList").children().each(function (index){
+        if (index > 0) {
+            ids.push($(this).attr("id"));
+        }
+    });
+    return ids;
 }
 
 /**
  * removes active user from db via async ajax call
  */
 function setUserInactive(async) {
+    let chatHidden = $("#chatHidden");
     let params = {
         "type":"POST",
         "async": async,
         "data": {
             "controller":"SetUserInactiveAjax",
-            "roomId":roomId,
-            "user":user
+            "roomId":chatHidden.val().slice(chatHidden.val().indexOf("|")+1),
+            "user":chatHidden.val().slice(0,chatHidden.val().indexOf("|"))
         }
     };
     $.ajax(domain+"index.php",params);
@@ -234,6 +232,7 @@ function playNotification() {
  */
 function scrollToChatBottom() {
     setTimeout(function (){
+        let chatDiv = $("#chatDiv");
         chatDiv.scrollTop(chatDiv[0].scrollHeight);
     },50)
 }
@@ -244,8 +243,8 @@ function scrollToChatBottom() {
 function showPreview() {
     if (fileInput[0].files[0].type.slice(0,6) === "image/") {
         let url = window.URL.createObjectURL(fileInput[0].files[0]);
-        previewImg.attr("src", url);
-        previewDiv.removeClass("d-none");
+        $("#preview").attr("src", url);
+        $("#previewDiv").removeClass("d-none");
     }
 }
 
@@ -253,10 +252,10 @@ function showPreview() {
  * hides preview
  */
 function hidePreview() {
-    previewDiv.addClass("d-none");
-    previewImg.attr("src","");
+    $("#previewDiv").addClass("d-none");
+    $("#preview").attr("src","");
     fileInput.val("");
-    previewText.html("");
+    $("#previewText").html("");
     chatInput.val("");
 }
 
